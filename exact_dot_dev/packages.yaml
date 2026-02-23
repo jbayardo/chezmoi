@@ -189,7 +189,7 @@ packages:
       brew: rustup
 
   nvm:
-    profiles: [personal]
+    profiles: [personal, work]
     sources:
       winget: CoreyButler.NVMforWindows
       brew: nvm
@@ -198,17 +198,17 @@ packages:
   # Cosmetic / Desktop
   # ---------------------------------------------------------------------------
   powertoys:
-    profiles: [personal]
+    profiles: [personal, work]
     sources:
       winget: Microsoft.PowerToys
 
   auto-dark-mode:
-    profiles: [personal]
+    profiles: [personal, work]
     sources:
       winget: XP8JK4HZBVF435
 
   wiztree:
-    profiles: [personal]
+    profiles: [personal, work]
     sources:
       winget: AntibodySoftware.WizTree
 
