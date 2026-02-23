@@ -9,16 +9,17 @@
 	directory = *
 
 [core]
-{{ if eq .chezmoi.os "windows" -}}
+{{- if eq .chezmoi.os "windows" }}
 	editor = hx
-{{ else -}}
+{{- else }}
 	editor = vim
-{{ end -}}
+{{- end }}
 	pager = delta
 
 	attributesFile = ~/.gitattributes
 	excludesFile = ~/.gitignore
-{{ if eq .chezmoi.os "windows" }}
+{{- if eq .chezmoi.os "windows" }}
+
 	hooksPath = ~/.git/hooks
 
 	fscache = true
@@ -26,9 +27,10 @@
 	preloadindex = true
 
 	autocrlf = true
-{{ else }}
+{{- else }}
+
 	autocrlf = input
-{{ end -}}
+{{- end }}
 
 [help]
 	autocorrect = 5
