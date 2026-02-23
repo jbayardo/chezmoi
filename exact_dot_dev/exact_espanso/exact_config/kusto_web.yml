@@ -1,0 +1,4 @@
+filter_title: "^.* | Azure Data Explorer .* - Microsoft\\s+Edge$"
+
+extra_includes:
+  - "../match/_kusto.yml"

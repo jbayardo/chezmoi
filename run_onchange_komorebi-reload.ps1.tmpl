@@ -1,0 +1,14 @@
+# configuration hash: {{ include (joinPath .chezmoi.sourceDir "komorebi.json") | sha256sum }}
+if (-not (Get-Command -Name komorebic -ErrorAction SilentlyContinue)) {
+  Write-Host "komorebic is not installed. Skipping setup."
+  return
+}
+
+# Check that komorebi.exe is running
+$komorebiProcess = Get-Process -Name komorebi -ErrorAction SilentlyContinue
+if ($null -eq $komorebiProcess) {
+  Write-Host "komorebi is not running. Skipping reload."
+  return
+}
+
+komorebic reload-configuration | Out-Null

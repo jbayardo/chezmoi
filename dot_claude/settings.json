@@ -1,0 +1,83 @@
+{
+  "permissions": {
+    "defaultMode": "bypassPermissions"
+  },
+  "model": "opus[1m]",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "dotnet script \"$HOME/.claude/user-scripts/SetTabColor.csx\" -- 4",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "dotnet script \"$HOME/.claude/user-scripts/SetTabColor.csx\" -- 3",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "dotnet script \"$HOME/.claude/user-scripts/SetTabColor.csx\" -- 2",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "dotnet script \"$HOME/.claude/user-scripts/SendNotification.csx\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "dotnet script \"$HOME/.claude/user-scripts/SetTabColor.csx\" -- 1",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "dotnet script \"$HOME/.claude/user-scripts/SetTabColor.csx\" -- -1",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "pwsh -NoProfile -File $HOME/.claude/statusline.ps1",
+    "padding": 2
+  },
+  "enabledPlugins": {
+    "code-review@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "agent-sdk-dev@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true
+  },
+  "skipDangerousModePermissionPrompt": true
+}

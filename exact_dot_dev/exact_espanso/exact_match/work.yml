@@ -1,0 +1,9 @@
+matches:
+  - trigger: ".alias."
+    replace: "jubayard"
+
+  - trigger: ".pme."
+    replace: "jubayard@pme.gbl.msidentity.com"
+     
+  - triggers: [".corp.", ".ms."]
+    replace: "jubayard@microsoft.com"

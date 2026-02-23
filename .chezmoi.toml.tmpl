@@ -1,0 +1,37 @@
+{{- $email := promptStringOnce . "email" "Email address" "julian@bayardo.info" -}}
+
+pager = "less -R"
+umask = 0o022
+
+{{ if eq .chezmoi.os "linux" -}}
+[keepassxc]
+    database = "/home/jbayardo/Sync/Keys.kdbx"
+    args = [ "--no-password", "--key-file", "/home/jbayardo/Sync/Keys.key" ]
+    prompt = false
+
+{{ end -}}
+[data]
+    email = {{ $email | quote }}
+    name = "Julian Bayardo Spadafora"
+
+[git]
+    autoCommit = true
+    autoPush = true
+
+[diff]
+    command = "delta"
+    pager = "delta"
+
+[merge]
+    command = "nvim"
+    args = ["-d", {{ "{{ .Destination }}" | quote }}, {{ "{{ .Source }}" | quote }}, {{ "{{ .Target }}" | quote }} ]
+
+{{ if eq .chezmoi.os "windows" -}}
+[cd]
+command = "pwsh"
+args = ["-NoLogo", "-NoProfile"]
+
+[interpreters.ps1]
+    command = "pwsh"
+    args = ["-NoLogo", "-NoProfile", "-NonInteractive"]
+{{ end -}}

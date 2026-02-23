@@ -1,0 +1,3 @@
+(gh release view -R ryanoasis/nerd-fonts --json assets | ConvertFrom-Json).assets | ForEach-Object -Parallel { Invoke-WebRequest "$($_.url)" -OutFile "$($_.name)" }
+Get-ChildItem . -Filter *.zip | ForEach-Object -Parallel { if (!(Test-Path $_.Name.Replace(".zip", ""))) { Expand-Archive -Path $_.FullName -Force } }
+Get-ChildItem . -File -Filter *.ttf -Recurse | ForEach-Object { $fonts = (New-Object -ComObject Shell.Application).Namespace(0x14); $fontPath = "C:\Windows\fonts\$($_.Name)"; if (!(Test-Path -Path $fontPath)) { $fonts.CopyHere($_.FullName); Copy-Item $_.FullName $fontPath } }

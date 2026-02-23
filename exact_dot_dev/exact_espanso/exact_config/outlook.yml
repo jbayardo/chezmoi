@@ -1,0 +1,4 @@
+filter_exec: "olk"
+
+extra_includes:
+  - "../match/_outlook.yml"

@@ -1,0 +1,326 @@
+(defcfg
+  movemouse-inherit-accel-state yes
+  movemouse-smooth-diagonals yes
+  danger-enable-cmd yes
+  )
+
+(defsrc
+  esc  up   down left rght
+  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  ins  del
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+  caps a    s    d    f    g    h    j    k    l    ;    '    ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt           spc            ralt rmet rctl
+)
+
+(defalias
+  ;; Using GACS. See: https://precondition.github.io/home-row-mods#gacs
+  ;; GACS -- Meta Alt Control Shift
+  taG (tap-hold-release 200 200 a lmet)
+
+  tsA (tap-hold-release 200 200 s lalt)
+  trA (tap-hold-release 200 200 r lalt)
+
+  tdC (tap-hold-release 200 200 d lctl)
+  tsC (tap-hold-release 200 200 s lctl)
+  
+  tfS (tap-hold-release 200 200 f lsft)
+  ttS (tap-hold-release 200 200 t lsft)
+
+  tm (layer-toggle mouse)
+  t9 (tap-hold-release 200 200 9 @tm)
+
+  sd (layer-switch default)
+  sq (layer-switch qwerty)
+  sc (layer-switch colemak)
+
+  lay (layer-toggle layers)
+  kom (layer-toggle komorebi)
+
+  ;; Holding ` or = toggles the layer selection layer
+  grl (tap-hold-release 200 200 grv @lay)
+  eql (tap-hold-release 200 200 = @lay)
+
+  ;; Cap is used for:
+  ;; - Tapping it once sets CapsLock
+  ;; - Tapping it twice sets since caps word
+  ;; - Holding it sets the Komorebi layer
+  cpw (caps-word 2000)
+  cpd (tap-dance 200 (caps @cpw))
+  cap (tap-hold-release 200 200 @cpd @kom)
+
+  ;; Escape is used for:
+  ;; - Tapping it once sends the Escape key
+  ;; - Holding it sets the Komorebi layer
+  ;; Mainly due to the Adv360 positioning of the esc key
+  esk (tap-hold-release 200 200 esc @kom)
+
+  ;; Holding F1 reloads Kanata's configuration
+  f1a (tap-hold-release 200 200 f1 lrld)
+
+  ;; Holding tab opens tab view
+  ;; Win+Tab: open Windows' Task View
+  tsk M-tab
+
+  tbs (tap-dance 200 (tab @tsk))
+  dlt (tap-dance 200 (del @tsk))
+
+  espanso A-S-spc
+  spe (tap-dance 200 (spc @espanso))
+)
+
+(defalias
+  mwu (mwheel-up 50 120)
+  mwd (mwheel-down 50 120)
+  mwl (mwheel-left 50 120)
+  mwr (mwheel-right 50 120)
+
+  msu (movemouse-up 10 1)
+  msl (movemouse-left 10 1)
+  msd (movemouse-down 10 1)
+  msr (movemouse-right 10 1)
+
+  mmu (movemouse-accel-up 1 1000 1 5)
+  mml (movemouse-accel-left 1 1000 1 5)
+  mmd (movemouse-accel-down 1 1000 1 5)
+  mmr (movemouse-accel-right 1 1000 1 5)
+
+  mmf (movemouse-speed 200)
+  mms (movemouse-speed 50)
+  mmz (movemouse-speed 10)
+  mmx (movemouse-speed 10)
+)
+
+(deflayer default
+  @esk up   down left rght
+  @f1a f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  ins  @dlt
+  @grl 1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  @tbs q    w    e    r    t    y    u    i    o    p    [    ]    \
+  @cap a    s    d    f    g    h    j    k    l    ;    '    ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt           @spe           ralt rmet rctl
+)
+
+(deflayer qwerty
+  @esk up   down left rght
+  @f1a f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  ins  @dlt
+  @grl 1    2    3    4    5    6    7    8    @t9  0    -    eql    bspc
+  @tbs q    w    e    r    t    y    u    i    o    p    [    ]    \
+  @cap @taG @tsA @tdC @tfS g    h    j    k    l    ;    '    ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt           @spe           ralt rmet rctl
+)
+
+(deflayer colemak
+  @esk up   down left rght
+  @f1a f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  ins  @dlt
+  @grl 1    2    3    4    5    6    7    8    @t9  0    -    eql    bspc
+  @tbs q    w    f    p    g    j    l    u    y    ;    [    ]    \
+  @cap @taG @trA @tsC @ttS d    h    n    e    i    o    '    ret
+  lsft z    x    c    v    b    k    m    ,    .    /    rsft
+  lctl lmet lalt           @spe           ralt rmet rctl
+)
+
+(deflayer mouse
+  @esk _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    @mmz @mms @mmf @mmx
+  _    mlft @mmu mrgt mmid _    @msl @msd @msu @msr    _    _    _    _
+  _    @mml @mmd @mmr _    _    @mwl @mwd @mwu @mwr _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _
+)
+
+(deflayer layers
+  @esk _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    @sd  @sq  @sc   _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _
+)
+
+(defalias
+  krl (cmd komorebic reload-configuration)
+  ksb (cmd komorebic stop --bar)
+
+  kcl (cmd komorebic close)
+  kmi (cmd komorebic minimize)
+
+  kfl (cmd komorebic focus left)
+  kfd (cmd komorebic focus down)
+  kfu (cmd komorebic focus up)
+  kfr (cmd komorebic focus right)
+  kfp (cmd komorebic cycle-focus previous)
+  kfn (cmd komorebic cycle-focus next)
+
+  kml (cmd komorebic move left)
+  kmd (cmd komorebic move down)
+  kmu (cmd komorebic move up)
+  kmr (cmd komorebic move right)
+  kpm (cmd komorebic promote)
+
+  ksl (cmd komorebic stack left)
+  ksd (cmd komorebic stack down)
+  ksu (cmd komorebic stack up)
+  ksr (cmd komorebic stack right)
+  kus (cmd komorebic unstack)
+  kcp (cmd komorebic cycle-stack previous)
+  kcn (cmd komorebic cycle-stack next)
+
+  kri (cmd komorebic resize-axis horizontal increase)
+  krd (cmd komorebic resize-axis horizontal decrease)
+  kvi (cmd komorebic resize-axis vertical increase)
+  kvd (cmd komorebic resize-axis vertical decrease)
+
+  ktf (cmd komorebic toggle-float)
+  ktm (cmd komorebic toggle-monocle)
+
+  krt (cmd komorebic retile)
+  kpa (cmd komorebic toggle-pause)
+
+  kfh (cmd komorebic flip-layout horizontal)
+  kfv (cmd komorebic flip-layout vertical)
+  kfc (cmd komorebic cycle-layout next)
+
+  kf0 (cmd komorebic focus-workspace 0)
+  kf1 (cmd komorebic focus-workspace 1)
+  kf2 (cmd komorebic focus-workspace 2)
+  kf3 (cmd komorebic focus-workspace 3)
+  kf4 (cmd komorebic focus-workspace 4)
+  kf5 (cmd komorebic focus-workspace 5)
+  kf6 (cmd komorebic focus-workspace 6)
+  kf7 (cmd komorebic focus-workspace 7)
+  kf8 (cmd komorebic focus-workspace 8)
+  kf9 (cmd komorebic focus-workspace 9)
+
+  km0 (cmd komorebic move-to-workspace 0)
+  km1 (cmd komorebic move-to-workspace 1)
+  km2 (cmd komorebic move-to-workspace 2)
+  km3 (cmd komorebic move-to-workspace 3)
+  km4 (cmd komorebic move-to-workspace 4)
+  km5 (cmd komorebic move-to-workspace 5)
+  km6 (cmd komorebic move-to-workspace 6)
+  km7 (cmd komorebic move-to-workspace 7)
+  km8 (cmd komorebic move-to-workspace 8)
+  km9 (cmd komorebic move-to-workspace 9)
+
+  k0 (tap-hold-release 200 200 @kf0 @km0)
+  k1 (tap-hold-release 200 200 @kf1 @km1)
+  k2 (tap-hold-release 200 200 @kf2 @km2)
+  k3 (tap-hold-release 200 200 @kf3 @km3)
+  k4 (tap-hold-release 200 200 @kf4 @km4)
+  k5 (tap-hold-release 200 200 @kf5 @km5)
+  k6 (tap-hold-release 200 200 @kf6 @km6)
+  k7 (tap-hold-release 200 200 @kf7 @km7)
+  k8 (tap-hold-release 200 200 @kf8 @km8)
+  k9 (tap-hold-release 200 200 @kf9 @km9)
+
+  kmmn (cmd komorebic cycle-move-to-monitor next)
+  kcmn (cmd komorebic cycle-monitor next)
+  
+  kpp (tap-hold-release 200 200 @ktm @kpm)
+)
+
+;; (defsrc
+;;   esc  up   down left rght
+;;   f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  ins  del
+;;   grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+;;   tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+;;   caps a    s    d    f    g    h    j    k    l    ;    '    ret
+;;   lsft z    x    c    v    b    n    m    ,    .    /    rsft
+;;   lctl lmet lalt           spc            ralt rmet rctl
+;; )
+(deflayer komorebi
+  @ksb @ksu @ksd @ksl @ksr
+  _    _    _    _    _    _    _    _    _    _    _    _    _    @kcl
+  _    @k0 @k1 @k2 @k3 @k4 @k5 @k6 @k7 @k8 @k9 _    _    @kmi
+  _    @kcl _    _    _    _    @kml @kmd @kmu @kmr _    @kcp @kcn _
+  _    _    _    _    @ktf _    @kfl @kfd @kfu @kfr @kus _    @kpp
+  _    _    _    @kfc _    _    _    @kmi _    @kcmn @kmmn    _
+  _    _    _              @krl           _    _    _
+)
+
+(defalias
+  by (tap-hold-release 200 200 y C-pgup)
+  bu (tap-hold-release 200 200 u pgup)
+  bi (tap-hold-release 200 200 i pgdn)
+  bo (tap-hold-release 200 200 o C-pgdn)
+  bn (tap-hold-release 200 200 n C-n)
+  bt (tap-hold-release 200 200 t C-t)
+  bw (tap-hold-release 200 200 w C-w)
+  br (tap-hold-release 200 200 r C-S-t)
+)
+
+(deflayer browser
+    @esk _    _    _    _
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    @grl _    _    _    _    _    _    _    _    _    _    _    _    _
+    @tbs _    @bw  _    @br  @bt  @by  @bu  @bi  @bo  _    _    _    _
+    @cap _    _    _    _    _    _    _    _    _    _    _    _
+    _    _    _    _    _    _    @bn  _    _    _    _    _
+    _    _    _              @spe           _    _    _
+)
+
+(deflayer editor
+    @esk _    _    _    _
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    @grl _    _    _    _    _    _    _    _    _    _    _    _    _
+    @tbs _    _    _    _    _    _    _    _    _    _    _    _    _
+    @cap _    _    _    _    _    _    _    _    _    _    _    _
+    _    _    _    _    _    _    _    _    _    _    _    _
+    _    _    _              @spe           _    _    _
+)
+
+(defalias
+  ;; Ctrl+C: send SIGINT to a Linux terminal program
+  termkill C-c
+
+  ;; Ctrl+Shift+(C|V): copy or paste from certain terminal programs
+  termcopy C-S-c
+  termpaste C-S-v
+
+  tcp (tap-hold-release 200 200 c @termcopy)
+  tpa (tap-hold-release 200 200 v @termpaste)
+  tki (tap-hold-release 200 200 k @termkill)
+)
+
+(deflayer terminal
+    @esk _    _    _    _
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    @grl _    _    _    _    _    _    _    _    _    _    _    _    _
+    @tbs _    _    _    _    _    _    _    _    _    _    _    _    _
+    @cap _    _    _    _    _    _    _    @tki _    _    _    _
+    _    _    _    @tcp @tpa _    _    _    _    _    _    _
+    _    _    _              @spe           _    _    _
+)
+
+;; (defsrc
+;;   esc  up   down left rght
+;;   f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  ins  del
+;;   grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+;;   tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+;;   caps a    s    d    f    g    h    j    k    l    ;    '    ret
+;;   lsft z    x    c    v    b    n    m    ,    .    /    rsft
+;;   lctl lmet lalt           spc            ralt rmet rctl
+;; )
+
+(defalias
+  kustowebnewtab C-j
+  kustodesktopnewtab C-t
+  kustoformat A-S-f
+  kustoclose A-S-c
+  kustosubmit S-ret
+  qre (tap-dance 200 (ret @kustosubmit))
+  )
+(deflayer kusto
+    @esk _    _    _    _
+    _    _    _    _    _    _    _    _    _    _    _    _    _    _
+    @grl _    _    _    _    _    _    _    _    _    _    _    _    _
+    @tbs _    _    _    _    _    _    _    _    _    _    _    _    _
+    @cap _    _    _    _    _    _    _    _    _    _    _    @qre
+    _    _    _    _    _    _    _    _    _    _    _    _
+    _    _    _              @spe           _    _    _
+)

@@ -1,0 +1,24 @@
+matches:
+  - trigger: ":wttrin"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: shell
+        params:
+          cmd: 'curl https://wttr.in?format="%l:+%c+%t\n" | % { $_.Content }'
+
+  - trigger: ":moonphase"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: shell
+        params:
+          cmd: 'curl https://wttr.in?format="%m\n" | % { $_.Content }'
+
+  - regex: ":wttrat/(?P<location>.*)/"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: shell
+        params:
+          cmd: 'curl https://wttr.in/{{location}}?format="%l:+%c+%t\n" | % { $_.Content }'

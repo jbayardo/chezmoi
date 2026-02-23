@@ -1,0 +1,94 @@
+function Add-PipxFunctions {
+  Get-ChildItem -Path (Resolve-Path "~/.dev/python/*.py") | ForEach-Object {
+    $scriptName = $_.BaseName;
+    $fullPath = $_.FullName;
+    
+    # Skip if script name is empty
+    if ([string]::IsNullOrWhiteSpace($scriptName)) {
+      Write-Debug "Skipping script with empty name: $fullPath"
+      return
+    }
+    
+    # Skip if a command with the same name already exists
+    if (Get-Command -Name $scriptName -ErrorAction SilentlyContinue) {
+      Write-Debug "Skipping script '$scriptName' as a command with that name already exists"
+      return
+    }
+    
+    # See: https://stackoverflow.com/questions/27218405/powershell-function-creation-with-set-item-and-getnewclosure
+    Set-Item -Path "function:global:$scriptName" -Value {
+      if (Get-Command "uv") {
+        & uv run "$fullPath" @Args
+      }
+      elseif (Get-Command "pipx") {
+        & pipx run "$fullPath" @Args
+      }
+      elseif (Get-Command "python") {
+        & python "$fullPath" @Args
+      }
+    }.GetNewClosure()
+  }
+}
+
+Add-PipxFunctions
+
+function Add-DotnetScripts {
+  $dotnetPath = "~/.dev/dotnet"
+  if (Test-Path -Path $dotnetPath) {
+    # Process individual .csx files
+    $csxFiles = Get-ChildItem -Path (Join-Path $dotnetPath "*.csx") -File -ErrorAction SilentlyContinue
+    if ($csxFiles) {
+      $csxFiles | ForEach-Object {
+        $scriptName = $_.BaseName;
+        $fullPath = $_.FullName;
+
+        # Skip if script name is empty
+        if ([string]::IsNullOrWhiteSpace($scriptName)) {
+          Write-Debug "Skipping script with empty name: $fullPath"
+          return
+        }
+        
+        # Skip if a command with the same name already exists
+        if (Get-Command -Name $scriptName -ErrorAction SilentlyContinue) {
+          Write-Debug "Skipping script '$scriptName' as a command with that name already exists"
+          return
+        }
+
+        # See: https://stackoverflow.com/questions/27218405/powershell-function-creation-with-set-item-and-getnewclosure
+        Set-Item -Path "function:global:$scriptName" -Value { & dotnet script "$fullPath" -- @Args }.GetNewClosure()
+      }
+    }
+
+    # Process directories containing main.csx
+    $directories = Get-ChildItem -Path $dotnetPath -Directory -ErrorAction SilentlyContinue
+    if ($directories) {
+      $directories | ForEach-Object {
+        $scriptName = $_.BaseName;
+        $fullPath = $_.FullName;
+
+        # Skip if script name is empty
+        if ([string]::IsNullOrWhiteSpace($scriptName)) {
+          Write-Debug "Skipping directory with empty name in: $fullPath"
+          return
+        }
+
+        $mainScript = Get-ChildItem -Path $fullPath -Filter "main.csx" -Recurse -File -ErrorAction SilentlyContinue;
+        if ($mainScript) {
+          $mainScriptName = $scriptName;
+          $mainScriptFullPath = $mainScript.FullName;
+          
+          # Skip if a command with the same name already exists
+          if (Get-Command -Name $mainScriptName -ErrorAction SilentlyContinue) {
+            Write-Debug "Skipping script '$mainScriptName' as a command with that name already exists"
+            return
+          }
+
+          # See: https://stackoverflow.com/questions/27218405/powershell-function-creation-with-set-item-and-getnewclosure
+          Set-Item -Path "function:global:$mainScriptName" -Value { & dotnet script "$mainScriptFullPath" -- @Args }.GetNewClosure()
+        }
+      }
+    }
+  }
+}
+
+Add-DotnetScripts

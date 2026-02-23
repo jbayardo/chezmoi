@@ -1,0 +1,4 @@
+filter_exec: "Kusto.Explorer"
+
+extra_includes:
+  - "../match/_kusto.yml"

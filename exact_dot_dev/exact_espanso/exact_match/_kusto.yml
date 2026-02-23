@@ -1,0 +1,98 @@
+
+matches:
+  - triggers: [".fast."]
+    label: "Kusto Performance Optimizations"
+    replace: |
+              set query_optimization_costbased_enabled;
+              set notruncation;
+              set maxmemoryconsumptionperiterator=68719476736;
+              set max_memory_consumption_per_query_per_node=68719476736;
+              set norequesttimeout=true;
+              set query_results_cache_max_age=time(1d);
+              set queryconsistency=weak;
+              set query_results_cache_per_shard;
+              $|$
+
+  - triggers: [".l.", ".logs."]
+    label: "CloudBuildLogs query"
+    replace: |
+              let db = 'CloudBuildProd';
+              let d = 1d; let bin = 1d; let e = now(); let s = e - d;
+              cluster('cbuild.kusto.windows.net').database(db).CloudBuildLogs
+              | where PreciseTimeStamp between (s .. e)
+              | where $|$
+              | limit 100
+              | sort by PreciseTimeStamp desc
+
+  - triggers: [".b.", ".builds."]
+    label: "BuildInfo query"
+    replace: |
+              let db = 'CloudBuildProd';
+              let d = 1d; let bin = 1d; let e = now(); let s = e - d;
+              cluster('cbuild.kusto.windows.net').database(db).BuildInfo
+              | where PreciseTimeStamp between (s .. e)
+              | where $|$
+              | limit 100
+              | sort by PreciseTimeStamp desc
+
+  - triggers: [".cl.", ".cache."]
+    label: "CloudCacheLogEvent query"
+    replace: |
+              let db = 'CloudBuildProd';
+              let d = 1d; let bin = 1d; let e = now(); let s = e - d;
+              cluster('cbuild.kusto.windows.net').database(db).CloudCacheLogEvent
+              | where PreciseTimeStamp between (s .. e)
+              | where $|$
+              | limit 100
+              | sort by PreciseTimeStamp desc
+
+  - triggers: [".ch."]
+    label: "Cache hash logs"
+    replace: |
+              let stamp = '';
+              let h = '$|$';
+              let db = 'CloudBuildProd';
+              let d = 1d; let bin = 1d; let e = now(); let s = e - d;
+              let sh = substring(h, 0, 22); let ssh = substring(h, 0, 20);
+              cluster('cbuild.kusto.windows.net').database(db).CloudCacheLogEvent
+              | where PreciseTimeStamp between (s .. e)
+              | where Stamp == stamp
+              | where Message has_any(h, sh, ssh)
+              | project PreciseTimeStamp, Stamp, Machine, CorrelationId, Message
+              | sort by PreciseTimeStamp asc
+
+  - trigger: '.kt.'
+    label: "CBTest CloudBuildLogs"
+    replace: "cluster('cbuild.kusto.windows.net').database('CloudBuildCBTest').CloudBuildLogs$|$"
+
+  - trigger: '.kp.'
+    label: "CBProd CloudBuildLogs"
+    replace: "cluster('cbuild.kusto.windows.net').database('CloudBuildProd').CloudBuildLogs$|$"
+
+  - trigger: '.ki.'
+    label: "CI CloudBuildLogs"
+    replace: "cluster('cbuild.kusto.windows.net').database('CloudBuildCI').CloudBuildLogs$|$"
+
+  - trigger: '.ka.'
+    label: "APDM DeviceManager"
+    replace: "cluster('apdmdata.kusto.windows.net').database('DeviceManager')."
+
+  - trigger: '.kc.'
+    label: "ICM"
+    replace: "cluster('icmclusterlb.kustomfa.windows.net').database('IcMDataWarehouse')."
+
+  - trigger: '.kd.'
+    label: "VSO"
+    replace: "cluster('vso.kusto.windows.net').database('VSO')."
+
+  - trigger: '.st.'
+    replace: 'let d = 1d; let bin = 1d; let e = now(); let s = e - d;$|$'
+
+  - trigger: '.tf.'
+    replace: '| where PreciseTimeStamp between (s .. e)$|$'
+
+  - trigger: '.sum.'
+    replace: '| summarize $|$ by bin(PreciseTimeStamp, bin)'
+
+  - trigger: '.sort.'
+    replace: '| sort by $|$ asc'

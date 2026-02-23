@@ -1,0 +1,173 @@
+[user]
+	email = {{ .email }}
+	name = {{ .name }}
+
+[push]
+	autoSetupRemote = true
+
+[safe]
+	directory = *
+
+[core]
+{{ if eq .chezmoi.os "windows" -}}
+	editor = hx
+{{ else -}}
+	editor = vim
+{{ end -}}
+	pager = delta
+
+	attributesFile = ~/.gitattributes
+	excludesFile = ~/.gitignore
+{{ if eq .chezmoi.os "windows" }}
+	hooksPath = ~/.git/hooks
+
+	fscache = true
+	longpaths = true
+	preloadindex = true
+
+	autocrlf = true
+{{ else }}
+	autocrlf = input
+{{ end -}}
+
+[help]
+	autocorrect = 5
+
+[merge]
+	conflictstyle = zdiff3
+
+	tool = nvimdiff
+	guitool = meld
+
+[mergetool "vscode"]
+	cmd = code --wait --new-window $MERGED
+
+[diff]
+	colorMoved = default
+
+[diff]
+	tool = difftastic
+	guitool = meld
+
+[difftool]
+	prompt = false
+
+[difftool "difftastic"]
+	cmd = difft "$LOCAL" "$REMOTE"
+
+[difftool "meld"]
+	cmd = meld "$LOCAL" "$REMOTE"
+
+[difftool "vscode"]
+	cmd = code --wait --diff --new-window $LOCAL $REMOTE
+
+[pager]
+	difftool = true
+
+[gc]
+	auto = 256
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	navigate = true
+	features = decorations
+	side-by-side = true
+	line-numbers = true
+	true-color = always
+	hyperlinks = true
+	hyperlinks-file-link-format = "file:///{path}:{line}"
+
+[delta "interactive"]
+	keep-plus-minus-markers = false
+
+[delta "decorations"]
+	commit-decoration-style = blue ol
+	commit-style = raw
+	file-style = omit
+	hunk-header-decoration-style = blue box
+	hunk-header-file-style = red
+	hunk-header-line-number-style = "#067a00"
+	hunk-header-style = file line-number syntax
+
+[alias]
+	a = add -A :/
+	amend = commit --amend
+
+	p = push
+	pf = push --force
+
+	s = status
+
+	c = commit -am
+	ci = commit
+	cm = commit -m
+
+	co = checkout
+	cb = checkout -b
+	undo = checkout main --
+
+	b = branch
+	br = branch
+
+	dtd = difftool --tool=difftastic
+	dtsd = difftool --staged --tool=difftastic
+	dtm = difftool --tool=meld
+	dtsm = difftool --staged --tool=meld
+	dtv = difftool --tool=vscode
+	dtsv = difftool --staged --tool=vscode
+	d = diff
+	dm = diff main
+	d1 = diff HEAD~1
+	d2 = diff HEAD~2
+	d3 = diff HEAD~3
+	ds = diff --staged
+
+	r = reset
+	r0 = reset HEAD
+	r1 = reset HEAD~1
+	r2 = reset HEAD~2
+	r3 = reset HEAD~3
+	rh = reset --hard
+	rh0 = reset --hard HEAD
+	rh1 = reset --hard HEAD~1
+	rh2 = reset --hard HEAD~2
+	rh3 = reset --hard HEAD~3
+	unstage = reset HEAD --
+	restore = reset --hard HEAD
+	uncommit = reset HEAD~1
+
+	l = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=short
+	last = log -1 HEAD
+	hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+	filelog = log -u
+	fl = log -u
+
+	srcs = remote -v
+
+	type = cat-file -t
+	dump = cat-file -p
+
+{{ if eq .chezmoi.os "windows" -}}
+[credential "azrepos:org/mseng"]
+	username = AnyUserName
+	azureAuthority = https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47
+
+[credential "azrepos:org/cloudbuild"]
+	username = jubayard@microsoft.com
+	azureAuthority = https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47
+
+[credential "azrepos:org/azureconfig"]
+	azureAuthority = https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47
+	username = jubayard@microsoft.com
+
+[credential "azrepos:org/msazure"]
+	azureAuthority = https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47
+	username = jubayard@microsoft.com
+
+[credential "https://microsoft.ghe.com"]
+	provider = github
+[credential "azrepos:org/devdiv"]
+	username = jubayard@microsoft.com
+{{ end -}}

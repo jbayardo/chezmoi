@@ -1,0 +1,4 @@
+
+matches:
+  - triggers: [".q.", ".question."]
+    replace: "Hi $|$! How are you doing? Just wanted to ask:"

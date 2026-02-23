@@ -1,0 +1,39 @@
+.emacs.d/elpa/
+.emacs.d/eln-cache/
+.emacs.d/.cache/
+.emacs.d/recentf
+.oh-my-zsh/cache/
+
+{{ if eq .chezmoi.os "linux" -}}
+# Windows-only files
+.kanata.kbd
+komokana.yaml
+komorebi.json
+komorebi.bar.json
+.config/whkdrc
+.lesshst
+.dev/
+.claude/
+claude-mcp-servers.ps1
+komorebi-reload.ps1
+update-oh-my-posh.ps1
+update-television-channels.ps1
+{{ end -}}
+
+{{ if eq .chezmoi.os "windows" -}}
+# Linux-only files
+.zshrc
+.inputrc
+.ssh/
+.wakatime.cfg
+.config/autostart/
+.config/keymapper/
+.config/atuin/
+.config/zellij/
+.config/direnv/
+mount_jellyfin.py
+seedbox_download.sh
+update.sh
+setup.sh
+update_television_channels.sh
+{{ end -}}

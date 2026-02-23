@@ -1,0 +1,4 @@
+filter_exec: "ms-teams"
+
+extra_includes:
+  - "../match/_teams.yml"

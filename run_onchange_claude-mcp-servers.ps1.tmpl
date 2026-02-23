@@ -1,0 +1,27 @@
+# configuration hash: {{ include (joinPath .chezmoi.sourceDir "dot_claude" "mcp-servers.json.tmpl") | sha256sum }}
+$claudeJson = Join-Path $env:USERPROFILE ".claude.json"
+$mcpJson = Join-Path $env:USERPROFILE ".claude" "mcp-servers.json"
+
+if (-not (Test-Path $claudeJson)) {
+  Write-Host "~/.claude.json not found. Skipping MCP server sync."
+  return
+}
+
+if (-not (Test-Path $mcpJson)) {
+  Write-Host "~/.claude/mcp-servers.json not found. Skipping MCP server sync."
+  return
+}
+
+$config = Get-Content $claudeJson -Raw | ConvertFrom-Json
+$mcp = Get-Content $mcpJson -Raw | ConvertFrom-Json
+
+# Set the top-level mcpServers field
+if ($null -eq $config.mcpServers) {
+  $config | Add-Member -NotePropertyName "mcpServers" -NotePropertyValue $mcp.mcpServers -Force
+} else {
+  $config.mcpServers = $mcp.mcpServers
+}
+
+$config | ConvertTo-Json -Depth 100 | Set-Content $claudeJson -Encoding UTF8
+
+Write-Host "Claude MCP servers synced from ~/.claude/mcp-servers.json"

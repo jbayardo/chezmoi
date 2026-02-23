@@ -1,0 +1,6 @@
+layout {
+  pane split_direction="vertical" {
+    pane name="System" command="btm" borderless=true
+    pane name="GPU" command="nvtop" borderless=true
+  }
+}

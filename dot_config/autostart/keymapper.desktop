@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Keymapper
+Exec=keymapper -u
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Comment=Cross-platform key remapper client

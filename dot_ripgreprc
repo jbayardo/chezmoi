@@ -1,0 +1,67 @@
+# Default case-insensitive search unless the pattern contains uppercase letters.
+--smart-case
+
+# Limit the number of columns in the output to 120.
+# --max-columns=120
+# --max-columns-preview
+
+# Add several types of shortcuts for common file types.
+--type-add
+web:*.{html,css,js}*
+
+--type-add
+markdown:*.{md,markdown,mdown,mkdn,mkd,markdown}*
+
+--type-add
+pwsh:*.{ps1,psm1,pssc,psd1,ps1xml,psrc}*
+
+--type-add
+py:*.{py,pyc,pyd,pyo,pyw,pyz,pyx,pyp,pyi,pyw,pyx,pyd,pyo,pyz,pyp,pyi}*
+
+--type-add
+shell:*.{sh,bash,zsh,ksh,csh,tcsh,shar,ash,dash,ksh,sh,bash,zsh,ksh,csh,tcsh,shar,ash,dash,ksh}*
+
+--type-add
+msbuild:*.{proj,csproj,vcxproj,sln,props,targets}*
+
+--type-add
+csharp:*.{cs,csx}*
+
+--type-add
+cpp:*.{cpp,h,cc,hpp,cxx}*
+
+--type-add
+json:*.{json,tfstate}*
+
+--type-add
+yaml:*.{yaml,yml}*
+
+--type-add
+bicep:*.{bicep,bicepparams}*
+
+--type-add
+docker:*.{dockerfile}*
+
+--type-add
+k8s:*.{yaml,yml,dockerfile}*
+
+--type-add
+tf:*.{tf,tfvars,tfstate}*
+
+--type-add
+bxl:*.{dsc}*
+
+--type-add
+data:*.{csv,tsv,psv,ssv,txt,parquet}*
+
+--type-add
+xml:*.{xml,xsd,xslt,xsl,wsdl,svg}*
+
+--type-add
+kusto:*.{kql,kusto,csl}*
+
+# Source control ignore files such as .gitignore are respected even if no git repository is present
+--no-require-git
+
+# Allow ctrl + click to open files in the editor
+--hyperlink-format=default

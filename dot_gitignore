@@ -1,0 +1,12 @@
+/GPATH
+/GRTAGS
+/GTAGS
+/tags
+/cscope.out.lock
+/tags.lock
+/tags.temp
+.aider*
+*.sqlite
+*.db
+nul
+.claude/

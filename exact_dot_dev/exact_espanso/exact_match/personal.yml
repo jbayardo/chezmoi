@@ -1,0 +1,37 @@
+matches:
+  # Email Addresses
+  - triggers: [".email.", ".mail."]
+    replace: "julian@bayardo.info"
+  - trigger: ".gmail."
+    replace: "bayardojulian@gmail.com"
+
+  # Argentina ID
+  - trigger: ".dni."
+    replace: "37835049"
+  - trigger: ".cuit."
+    replace: "20-37835049-0"
+
+  # Phone Numbers
+  - triggers: [".phone.", ".cell.", ".mobile."]
+    replace: "+1 425 410 8484"
+  - trigger: ".gvoice."
+    replace: "+1 408 909 4049"
+  
+  - trigger: ".phonear."
+    replace: "+54 11 4521 1889"
+
+  # Home Address
+  - trigger: ".address."
+    replace: "6335 180th Pl NE Unit 419, Redmond, WA 98052"
+  
+  - trigger: ".addr."
+    replace: "6335 180th Pl NE Unit 419"
+
+  - trigger: ".city."
+    replace: "Redmond"
+
+  - trigger: ".state."
+    replace: "WA"
+
+  - trigger: ".zip."
+    replace: "98052" 

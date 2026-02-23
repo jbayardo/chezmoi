@@ -1,0 +1,44 @@
+- exe: "firefox.exe"
+  target_layer: "browser"
+  title_overrides:
+    - title: "Mozilla Firefox"
+      strategy: "equals"
+      target_layer: "default"
+    - title: "| Azure Data Explorer"
+      strategy: "contains"
+      target_layer: "kusto"
+  virtual_key_overrides:
+    - virtual_key_code: 18
+      targer_layer: "default"
+  virtual_key_ignores:
+    - 18
+
+- exe: "msedge.exe"
+  target_layer: "browser"
+  title_overrides:
+    - title: "Mozilla Firefox"
+      strategy: "equals"
+      target_layer: "default"
+    - title: "| Azure Data Explorer"
+      strategy: "contains"
+      target_layer: "kusto"
+  virtual_key_overrides:
+    - virtual_key_code: 18
+      targer_layer: "default"
+  virtual_key_ignores:
+    - 18
+
+- exe: "Kusto.Explorer.exe"
+  target_layer: "kusto"
+- exe: "WindowsTerminal.exe"
+  target_layer: "terminal"
+- exe: "idea64.exe"
+  target_layer: "editor"
+- exe: "vscode.exe"
+  target_layer: "editor"
+- exe: "code.exe"
+  target_layer: "editor"
+- exe: "Code.exe"
+  target_layer: "editor"
+- exe: "cursor.exe"
+  target_layer: "editor"

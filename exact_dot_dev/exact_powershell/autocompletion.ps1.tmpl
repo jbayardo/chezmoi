@@ -1,0 +1,67 @@
+# This script is executed in the background every time the profile loads. It is used to set up all the random external
+# dependencies that require executing a generated script. In this case, we generate the script once when chezmoi runs
+# and just reuse it.
+#
+# This improves the profile load performance.
+
+using namespace System.Management.Automation
+using namespace System.Management.Automation.Language
+
+# zoxide autocompletions
+
+{{ if lookPath "broot" }}
+{{ output "broot" "--print-shell-function" "powershell" | trim | replace "Function br" "Function global:br" }}
+{{ end }}
+
+{{ if lookPath "zoxide" }}
+{{ output "zoxide" "init" "--hook" "pwd" "powershell" | trim }}
+{{ end }}
+
+# watchexec autocompletions
+
+{{ if lookPath "watchexec" }}
+{{ output "watchexec" "--completions" "powershell" | trim | replace "using namespace System.Management.Automation.Language" "" | replace "using namespace System.Management.Automation" "" }}
+{{ end }}
+
+# ripgrep autocompletions
+
+{{ if lookPath "rg" }}
+{{ output "rg" "--generate=complete-powershell" | trim | replace "using namespace System.Management.Automation.Language" "" | replace "using namespace System.Management.Automation" "" }}
+{{ end }}
+
+# chezmoi autocompletions
+
+{{ output "chezmoi" "completion" "powershell" | trim }}
+
+# rustup autocompletions
+
+{{ if lookPath "rustup" }}
+{{ output "rustup" "completions" "powershell" | trim | replace "using namespace System.Management.Automation.Language" "" | replace "using namespace System.Management.Automation" "" }}
+{{ end }}
+
+# winget autocompletions
+
+Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {
+  param($wordToComplete, $commandAst, $cursorPosition)
+
+  [Console]::InputEncoding = [Console]::OutputEncoding = $OutputEncoding = [System.Text.Utf8Encoding]::new()
+  $Local:word = $wordToComplete.Replace('"', '""')
+  $Local:ast = $commandAst.ToString().Replace('"', '""')
+
+  winget complete --word="$Local:word" --commandline "$Local:ast" --position $cursorPosition | ForEach-Object {
+    [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
+  }
+}
+
+# dotnet autocompletions
+
+Register-ArgumentCompleter -Native -CommandName dotnet -ScriptBlock {
+  param($commandName, $wordToComplete, $cursorPosition)
+
+  dotnet complete --position $cursorPosition "$wordToComplete" | ForEach-Object {
+    [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
+  }
+}
+
+Import-Module posh-git -Scope Global
+Import-Module Posh-ssh -Scope Global

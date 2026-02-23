@@ -1,0 +1,10 @@
+% git
+
+# Clone a shallow repository
+git clone --depth 1 <URL>
+
+# Unshallow a shallow clone
+git fetch --unshallow
+
+# Clone a repository without checking out files
+git clone --filter=blob:none --no-checkout <URL>

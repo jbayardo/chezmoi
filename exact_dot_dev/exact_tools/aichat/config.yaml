@@ -1,0 +1,40 @@
+# see https://github.com/sigoden/aichat/blob/main/config.example.yaml
+
+model: GitHub:gpt-4o
+keybindings: vi
+editor: nvim
+
+clients:
+  - type: openai-compatible
+    name: GitHub
+    api_base: http://localhost:4141/v1/
+    api_key: dummy
+    models:
+      - name: gpt-4.1
+      - name: gpt-5-mini
+      - name: gpt-5
+      - name: gpt-3.5-turbo
+      - name: gpt-3.5-turbo-0613
+      - name: gpt-4o-mini
+      - name: gpt-4o-mini-2024-07-18
+      - name: gpt-4
+      - name: gpt-4-0613
+      - name: gpt-4-0125-preview
+      - name: gpt-4o
+      - name: gpt-4o-2024-11-20
+      - name: gpt-4o-2024-05-13
+      - name: gpt-4-o-preview
+      - name: gpt-4o-2024-08-06
+      - name: o3-mini-paygo
+      - name: gpt-41-copilot
+      - name: gpt-5-codex
+      - name: text-embedding-ada-002
+      - name: text-embedding-3-small
+      - name: text-embedding-3-small-inference
+      - name: claude-3.5-sonnet
+      - name: claude-sonnet-4
+      - name: claude-sonnet-4.5
+      - name: claude-opus-41
+      - name: claude-haiku-4.5
+      - name: gemini-2.5-pro
+      - name: gpt-4.1-2025-04-14

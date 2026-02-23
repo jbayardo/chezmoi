@@ -1,0 +1,7 @@
+# configuration hash: {{ include (joinPath .chezmoi.sourceDir "exact_dot_dev/exact_powershell/oh-my-posh.json") | sha256sum }}
+if (-not (Get-Command -Name oh-my-posh -ErrorAction SilentlyContinue)) {
+  Write-Host "oh-my-posh is not installed. Skipping setup."
+  return
+}
+
+oh-my-posh init pwsh --config {{ joinPath .chezmoi.sourceDir "exact_dot_dev/exact_powershell/oh-my-posh.json" }} --print > ~/.dev/powershell/shell.ps1

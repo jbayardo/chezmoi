@@ -1,0 +1,393 @@
+# [2023-05-16 19:44] Julian B: https://gist.github.com/hyperupcall/99e355405611be6c4e0a38b6e3e8aad0
+# [2023-05-17 01:41] : https://github.com/beatcracker/toptout/
+# https://github.com/builtbybel/privatezilla
+# https://github.com/t-richards/chemo
+# [2023-05-17 17:26] Julian B: https://github.com/jarun/Buku
+# [2023-05-17 17:33] Julian B: finding and archiving Kusto queries
+# [2023-05-17 17:33] Julian B: https://icmdocs.azurewebsites.net/developers/GettingStarted.html
+# [2023-05-18 02:31] Julian B: Pwsh timers and alarms
+# [2023-05-18 02:34] Julian B: Timed actions
+# [2023-05-18 02:35] Julian B: Code search better
+# [2023-05-18 13:42] Julian B: custom monitoring using pythong
+# [2023-05-18 13:45] Julian B: extract bxl params from console to derive a/b testing scenarios
+# [2023-05-19 02:32] Julian B: Foxy proxy list
+# Tridactyl cmds
+# Vscode profiles
+
+# notebook taking with code
+# VPN
+# powertoys sync
+
+# [2023-05-05 02:20] Julian B: https://github.com/erikw/vim-keybindings-everywhere-the-ultimate-list
+# [2023-05-05 02:20] Julian B: https://prxbx.com/email/
+# [2023-05-05 02:20] Julian B: https://www.privacyguides.org/en/tools/#news-aggregators
+# [2023-05-05 02:22] Julian B: https://donotpay.com/login
+# [2023-05-16 19:34] Julian B: https://www.propertyroom.com/c/electronics
+# [2023-05-16 19:41] Julian B: https://tutanota.com/pricing
+# [2023-05-17 17:33] Julian B: https://icmdocs.azurewebsites.net/developers/GettingStarted.html
+# [2023-05-18 02:41] Julian B: https://www.charachorder.com/products/charachorder-one
+# [2023-05-18 02:42] Julian B: https://svalboard.com/
+# [2023-05-22 13:38] Julian B: https://github.com/insanum/gcalcli
+
+# https://github.com/pldmgg/misc-powershell
+# TODO: kusto ingestion commands https://learn.microsoft.com/en-us/azure/data-explorer/lightingest
+
+$global:Timing = $false
+$global:Stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+$global:Breakpoint = $global:Stopwatch.Elapsed
+
+function Write-StartTiming {
+  param (
+    [string]$Operation
+  )
+
+  if ($global:Timing) {
+    Write-Host "[TIMING] $Operation starting"
+    $global:Breakpoint = $global:Stopwatch.Elapsed
+  }
+}
+
+function Write-EndTiming {
+  param (
+    [string]$Operation
+  )
+
+  if ($global:Timing) {
+    Write-Host "[TIMING] $Operation completed. Took " ($global:Stopwatch.Elapsed - $global:Breakpoint).TotalMilliseconds "ms."
+    $global:Breakpoint = $global:Stopwatch.Elapsed
+  }
+}
+
+
+Write-StartTiming "PATH"
+
+if ($IsWindows) {
+  $Env:HOME = $Env:USERPROFILE
+}
+else {
+  $Env:USERPROFILE = $Env:HOME
+}
+
+# Load extra binaries path
+$PathDelimiter = ";"
+if (!$IsWindows) {
+  $PathDelimiter = ":"
+}
+
+$ExtraPaths = @(
+  "~/.dev/powershell/scripts",
+  "~/.dev/tools/kusto-cli"
+)
+
+foreach ($Path in $ExtraPaths) {
+  try {
+    $Path = Resolve-Path $Path -ErrorAction Stop
+    $env:PATH += "$PathDelimiter$Path"
+  }
+  catch {
+  }
+}
+
+$Env:LLM_USER_PATH = Resolve-Path "~/.dev/tools/llm";
+
+$Env:XDG_CONFIG_HOME = Resolve-Path "~/.config";
+
+$Env:NAVI_CONFIG = Resolve-Path "~/.dev/tools/navi/config.yaml";
+# $Env:NAVI_PATH = Resolve-Path "~/.dev/tools/navi/cheats";
+$Env:AICHAT_CONFIG_DIR = Resolve-Path "~/.dev/tools/aichat"
+$Env:RIPGREP_CONFIG_PATH = Resolve-Path "~/.ripgreprc"
+
+# Enables image preview in Yazi
+# See: https://yazi-rs.github.io/docs/installation/#windows
+$Env:YAZI_FILE_ONE = "C:\Program Files\Git\usr\bin\file.exe"
+
+function global:reload {
+  Update-PathVariable
+  . $profile
+  Write-Output "Profile reloaded."
+}
+
+Write-EndTiming "PATH"
+
+Write-StartTiming "Aliases"
+
+# Commonly used programs
+
+New-Alias -Force search tv
+New-Alias -Force ff tv
+New-Alias -Force Find-File tv
+
+New-Alias -Force rename rnr
+New-Alias -Force diskspace duf
+New-Alias -Force g git
+
+New-Alias -Force calc kalker
+New-Alias -Force math kalker
+New-Alias -Force calculator kalker
+
+New-Alias -Force stackoverflow hors
+New-Alias -Force wc rwc
+
+New-Alias -Force cheat navi
+New-Alias -Force cheatsheet navi
+New-Alias -Force cheatsheets navi
+
+function global:Start-Yazi {
+  $tmp = [System.IO.Path]::GetTempFileName()
+  yazi.exe $args --cwd-file="$tmp"
+  $cwd = Get-Content -Path $tmp -Encoding UTF8
+  if (-not [String]::IsNullOrEmpty($cwd) -and $cwd -ne $PWD.Path) {
+    Set-Location -LiteralPath ([System.IO.Path]::GetFullPath($cwd))
+  }
+  Remove-Item -Path $tmp
+}
+
+New-Alias -Force yazi Start-Yazi
+New-Alias -Force y Start-Yazi
+New-Alias -Force cdi Start-Yazi
+New-Alias -Force nav Start-Yazi
+New-Alias -Force browse Start-Yazi
+New-Alias -Force navs Start-Yazi
+New-Alias -Force browses Start-Yazi
+
+function global:Start-Ls-Replacement {
+  lsd --icon always --human-readable --long $args
+}
+
+New-Alias -Force ls Start-Ls-Replacement
+New-Alias -Force lp Start-Ls-Replacement
+New-Alias -Force ll Start-Ls-Replacement
+New-Alias -Force l Start-Ls-Replacement
+
+function global:Path {
+  (Get-Item $args).FullName | clip
+}
+
+if ($IsWindows) {
+  New-Alias -Force watch viddy
+  New-Alias -Force w viddy
+
+  New-Alias -Force top btm
+  New-Alias -Force htop btm
+
+  function global:cg {
+    try {
+      rg --json $args | delta
+    }
+    catch {
+    }
+  }
+  New-Alias -Force grep rg
+  New-Alias -Force ripgrep rg
+
+  New-Alias -Force -Option AllScope cat bat
+
+  New-Alias -Force find fd
+
+  function Update-NeoVim {
+    # A lot of LSP servers require Python to be installed and available in PATH.
+    Import-Python
+
+    # Useful when we need to recompile plugins that depend on C++
+    Import-VcVarsAll
+
+    nvim -c "normal! <Space>pa" -c "qa"
+  }
+
+  function Start-NeoVim {
+    nvim $args
+  }
+
+  New-Alias -Force vi Start-NeoVim
+  New-Alias -Force vim Start-NeoVim
+  New-Alias -Force ide Start-NeoVim
+  New-Alias -Force e Start-NeoVim
+  New-Alias -Force v code
+  New-Alias -Force f hx
+
+  New-Alias -Force py python
+
+  New-Alias -Force log tl
+  New-Alias -Force logs tl
+  New-Alias -Force viewl tl
+  New-Alias -Force logv tl
+}
+
+function global:ports { netstat -aon | grep LISTENING }
+
+function global:redmond { wthrr "Redmond, WA" -f w -f d -u c -u kmh -u ms -u 24h -u % -u mm }
+function global:bsas { wthrr "Buenos Aires, Ciudad Autónoma de Buenos Aires, Argentina" -f w -f d -u c -u kmh -u ms -u 24h -u % -u mm }
+New-Alias -Force us redmond
+New-Alias -Force arg bsas
+
+function global:diskusage { dua interactive $args }
+New-Alias -Force dh diskusage
+New-Alias -Force dsk diskusage
+New-Alias -Force dust diskusage
+if ($IsWindows) {
+  New-Alias -Force du diskusage
+}
+
+function global:Stop-WindowsManager {
+  Get-WmiObject win32_process -Filter "CommandLine LIKE '%komorebi.ahk%'" | ForEach-Object {
+    Stop-Process -Id $_.ProcessId
+  } | Out-Null
+
+  Get-Process -Name komokana -ErrorAction SilentlyContinue | Stop-Process -Force | Out-Null
+  Get-Process -Name kanata -ErrorAction SilentlyContinue | Stop-Process -Force | Out-Null
+  komorebic stop --bar --whkd | Out-Null
+}
+
+function global:Start-WindowsManager {
+  param (
+    [switch]$Keyboard,
+    [switch]$Sync
+  )
+
+  komorebic start --bar
+
+  if ($Keyboard) {
+    Start-Process -WindowStyle Hidden -FilePath "kanata" -ArgumentList "-c", (Resolve-Path "~/.kanata.kbd"), "-p", 63821
+  }
+
+  if ($Keyboard -and $Sync) {
+    Start-Process -WindowStyle Hidden -FilePath "komokana" -ArgumentList "--kanata-port", 63821, "--default-layer", "default"
+  }
+}
+
+function global:Restart-WindowsManager {
+  Stop-WindowsManager
+  Start-WindowsManager
+}
+
+function global:Clear-Caches {
+  dotnet nuget locals all --clear
+  docker system prune --volumes --force
+  # TODO: load conda
+  conda clean -a -y
+  pip cache remove *
+  pip cache purge
+  # TODO: bxl, repos clean, git gc
+}
+
+function global:Clear-Project {
+  kondo
+}
+
+function upgrades {
+  if (Get-Command "dotnet") {
+    dotnet tool update -g --all
+  }
+  
+  if (Get-Command "rustup") {
+    rustup update
+    Import-VcVarsAll
+    cargo install-update -a
+  }
+
+  Invoke-Elevated -ScriptBlock { 
+    if (Get-Command "choco" -ErrorAction SilentlyContinue) {
+      choco upgrade all -y
+    }
+
+    if (Get-Command "scoop" -ErrorAction SilentlyContinue) {
+      scoop update --all --quiet
+    }
+
+    if (Get-Command "winget" -ErrorAction SilentlyContinue) {
+      winget upgrade --all --silent --force --accept-source-agreements --accept-package-agreements
+    }
+  }
+}
+
+$env:EDITOR = "hx"
+$env:VISUAL = "code --wait"
+# See: https://dandavison.github.io/delta/tips-and-tricks/mouse-scrolling.html
+$env:DELTA_PAGER = "less -R"
+$env:BAT_PAGER = "less -RF"
+$env:HORS_ENGINE = "stackoverflow"
+
+# See: https://ohmyposh.dev/docs/faq#python-venv-prompt-changes-on-activating-virtual-environment
+$env:VIRTUAL_ENV_DISABLE_PROMPT = 1
+
+# Ensure global:clip can copy when using ssh
+# See: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/set-clipboard?view=powershell-7.4
+$PSDefaultParameterValues['Set-Clipboard:AsOSC52'] = $env:SSH_CLIENT
+
+function Assert-IsNonInteractiveShell {
+  # Test each Arg for match of abbreviated '-NonInteractive' command.
+  $NonInteractive = [Environment]::GetCommandLineArgs() | Where-Object { $_ -like '-NonI*' }
+
+  if ([Environment]::UserInteractive -and -not $NonInteractive) {
+    # We are in an interactive shell.
+    return $false
+  }
+
+  return $true
+}
+
+if (Assert-IsNonInteractiveShell) {
+  return;
+}
+
+Write-EndTiming "Aliases"
+
+Write-StartTiming "Modules"
+
+Import-Module -Force -Name ("~/.dev/powershell/modules/AggregateModule.psm1" | Resolve-Path)
+
+Write-EndTiming "Modules"
+
+Write-StartTiming "Shell"
+
+# Disable oh-my-posh when running inside VS Code's integrated terminal
+if ($env:TERM_PROGRAM -ne "vscode") {
+  oh-my-posh init pwsh --config "~/.dev/powershell/oh-my-posh.json" | Invoke-Expression
+}
+else {
+  . "$(code --locate-shell-integration-path pwsh)"
+}
+
+# Oh My Posh emits OSC 9;9 for Windows Terminal (via pwd=osc99).
+# WezTerm needs OSC 7 instead — wrap the prompt to emit it.
+if ($env:TERM_PROGRAM -eq "WezTerm") {
+  $__ompOriginalPrompt = $function:prompt
+  function global:prompt {
+    $result = & $__ompOriginalPrompt
+    $loc = $executionContext.SessionState.Path.CurrentLocation
+    if ($loc.Provider.Name -eq "FileSystem") {
+      $path = $loc.ProviderPath -replace '\\', '/'
+      $result = "$([char]27)]7;file://${env:COMPUTERNAME}/${path}$([char]27)\$result"
+    }
+    return $result
+  }
+}
+
+Write-EndTiming "Shell"
+
+Write-StartTiming "Deferred"
+
+Register-EngineEvent -SourceIdentifier ([Management.Automation.PsEngineEvent]::OnIdle) -MaxTriggerCount 1 -Action {
+  Get-Content -Path '~/.dev/powershell/psreadline.ps1' -Raw | Invoke-Expression
+  Get-Content -Path '~/.dev/powershell/autocompletion.ps1' -Raw | Invoke-Expression
+  Get-Content -Path '~/.dev/powershell/deferred.ps1' -Raw | Invoke-Expression
+  Get-Content -Path '~/.dev/powershell/setup-scripts.ps1' -Raw | Invoke-Expression
+
+  #Remove current Job (No Need to get job result)
+  $EventSubscriber.Action | Remove-Job -Force -ErrorAction Ignore
+  #Note:PSModule Loading error is not returned.
+} > $null
+
+Register-EngineEvent -SourceIdentifier ([Management.Automation.PsEngineEvent]::OnIdle) -MaxTriggerCount 1 -Action {
+  # Import-Python
+
+  #Remove current Job (No Need to get job result)
+  $EventSubscriber.Action | Remove-Job -Force -ErrorAction Ignore
+  #Note:PSModule Loading error is not returned.
+} > $null
+
+Write-EndTiming "Deferred"
+
+if ($Timing) {
+  Write-Host "[TIMING] TOTAL: " $global:Stopwatch.Elapsed.TotalMilliseconds "ms."
+}

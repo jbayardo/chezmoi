@@ -1,0 +1,44 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@playwright/mcp@latest", "--browser", "msedge", "--headless"]
+    },
+    "kusto": {
+      "type": "stdio",
+      "command": "dotnet",
+      "args": ["script", "{{ .chezmoi.homeDir }}/.claude/user-scripts/kusto-mcp.csx"]
+    },
+    "ado": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@azure-devops/mcp", "msazure", "--authentication", "azcli"]
+    },
+    "icm": {
+      "type": "stdio",
+      "command": "agency",
+      "args": ["mcp", "icm"]
+    },
+    "es-chat": {
+      "type": "stdio",
+      "command": "agency",
+      "args": ["mcp", "es-chat"]
+    },
+    "msft-learn": {
+      "type": "stdio",
+      "command": "agency",
+      "args": ["mcp", "msft-learn"]
+    },
+    "workiq": {
+      "type": "stdio",
+      "command": "agency",
+      "args": ["mcp", "workiq"]
+    },
+    "notification": {
+      "type": "stdio",
+      "command": "dotnet",
+      "args": ["script", "{{ .chezmoi.homeDir }}/.claude/user-scripts/notification-mcp.csx"]
+    }
+  }
+}

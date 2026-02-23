@@ -1,0 +1,4 @@
+# Function to set up matchbox shared target
+use_matchbox() {
+    export CARGO_TARGET_DIR="$HOME/src/matchbox-target"
+}

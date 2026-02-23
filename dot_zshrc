@@ -1,0 +1,470 @@
+# If you come from bash you might have to change your $PATH.
+# export PATH=$HOME/bin:/usr/local/bin:$PATH
+
+# Path to your oh-my-zsh installation.
+export ZSH="$HOME/.oh-my-zsh"
+
+# Set name of the theme to load --- if set to "random", it will
+# load a random theme each time oh-my-zsh is loaded, in which case,
+# to know which specific one was loaded, run: echo $RANDOM_THEME
+# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+ZSH_THEME="af-magic"
+
+# Set list of themes to pick from when loading at random
+# Setting this variable when ZSH_THEME=random will cause zsh to load
+# a theme from this variable instead of looking in $ZSH/themes/
+# If set to an empty array, this variable will have no effect.
+# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+
+# Uncomment the following line to use case-sensitive completion.
+# CASE_SENSITIVE="true"
+
+# Uncomment the following line to use hyphen-insensitive completion.
+# Case-sensitive completion must be off. _ and - will be interchangeable.
+# HYPHEN_INSENSITIVE="true"
+
+# Uncomment one of the following lines to change the auto-update behavior
+# zstyle ':omz:update' mode disabled  # disable automatic updates
+# zstyle ':omz:update' mode auto      # update automatically without asking
+# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
+
+# Uncomment the following line to change how often to auto-update (in days).
+# zstyle ':omz:update' frequency 13
+
+# Uncomment the following line if pasting URLs and other text is messed up.
+# DISABLE_MAGIC_FUNCTIONS="true"
+
+# Uncomment the following line to disable colors in ls.
+# DISABLE_LS_COLORS="true"
+
+# Uncomment the following line to disable auto-setting terminal title.
+# DISABLE_AUTO_TITLE="true"
+
+# Uncomment the following line to enable command auto-correction.
+# ENABLE_CORRECTION="true"
+
+# Uncomment the following line to display red dots whilst waiting for completion.
+# You can also set it to another string to have that shown instead of the default red dots.
+# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
+# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
+# COMPLETION_WAITING_DOTS="true"
+
+# Uncomment the following line if you want to disable marking untracked files
+# under VCS as dirty. This makes repository status check for large repositories
+# much, much faster.
+# DISABLE_UNTRACKED_FILES_DIRTY="true"
+
+# Uncomment the following line if you want to change the command execution time
+# stamp shown in the history command output.
+# You can set one of the optional three formats:
+# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+# or set a custom format using the strftime function format specifications,
+# see 'man strftime' for details.
+# HIST_STAMPS="mm/dd/yyyy"
+
+# Would you like to use another custom folder than $ZSH/custom?
+# ZSH_CUSTOM=/path/to/new-custom-folder
+
+# Which plugins would you like to load?
+# Standard plugins can be found in $ZSH/plugins/
+# Custom plugins may be added to $ZSH_CUSTOM/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(
+  alias-finder
+  aliases
+  bazel
+  cabal
+  chezmoi
+  colored-man-pages
+  command-not-found
+  common-aliases
+  cp
+  docker
+  docker-compose
+  dotnet
+  extract
+  fzf
+  gh
+  jsontools
+  nmap
+  npm
+  nvm
+  python
+  rsync
+  rust
+  timer
+  urltools
+  web-search
+  zoxide
+  zsh-interactive-cd
+  zsh-navigation-tools
+)
+
+source $HOME/.profile
+
+source $ZSH/oh-my-zsh.sh
+
+eval "$(atuin init --disable-up-arrow zsh)"
+
+eval "$(direnv hook zsh)"
+
+# User configuration
+
+# export MANPATH="/usr/local/man:$MANPATH"
+
+# You may need to manually set your language environment
+# export LANG=en_US.UTF-8
+
+# Preferred editor for local and remote sessions
+# if [[ -n $SSH_CONNECTION ]]; then
+#   export EDITOR='vim'
+# else
+#   export EDITOR='mvim'
+# fi
+
+# Set personal aliases, overriding those provided by oh-my-zsh libs,
+# plugins, and themes. Aliases can be placed here, though oh-my-zsh
+# users are encouraged to define aliases within the ZSH_CUSTOM folder.
+# For a full list of active aliases, run `alias`.
+
+export EDITOR="nvim"
+export VISUAL="code"
+
+alias weather="curl \"https://wttr.in?m&F&lang=en\""
+alias redmond="curl \"https://wttr.in/~Redmond+WA?m&F&lang=en\""
+alias argentina="curl \"https://wttr.in/~Buenos+Aires?m&F&lang=en\""
+
+alias reload="source $HOME/.zshrc"
+
+alias bottom="btop"
+alias btm="btop"
+
+alias stats="glances"
+
+alias logs="lnav"
+alias log="lnav"
+
+function zj() {
+  # Use gsettings get org.gnome.desktop.interface color-scheme to select tokyonight or tokyonight-day
+  local color_scheme=$(gsettings get org.gnome.desktop.interface color-scheme | tr -d "'")
+  if [[ "$color_scheme" == "prefer-dark" ]]; then
+    zellij options --theme tokyo-night "$@"
+  else
+    zellij options --theme tokyo-night-light "$@"
+  fi
+}
+
+alias tmux="zj"
+alias screen="zj"
+
+alias vim="nvim"
+alias vi="nvim"
+
+alias ripgrep="rg"
+
+alias du="dust"
+
+alias copilot="copilot --yolo"
+alias claude="claude --dangerously-skip-permissions"
+alias codex="codex --full-auto"
+
+alias c="chezmoi"
+alias ch="cd $(chezmoi source-path)"
+alias ca="chezmoi apply"
+alias cm="chezmoi"
+
+# Watch the chezmoi source directory and auto-apply on changes
+cmw() {
+  local src="$(chezmoi source-path)"
+  echo "Watching $src for changes..."
+  watchexec --watch "$src" -- chezmoi apply --force --keep-going
+}
+
+alias k="keepassxc"
+
+alias calc="kalker"
+alias calculator="kalker"
+
+alias root="cd \$(git rev-parse --show-toplevel)"
+
+alias dotfiles="cd $HOME/.local/share/chezmoi"
+alias edit-dotfiles="$VISUAL $HOME/.local/share/chezmoi"
+
+alias home="cd $HOME"
+alias hm="cd $HOME"
+
+alias snippets="snipkit"
+alias snips="snipkit"
+alias sn="snipkit"
+
+alias snippet="pet"
+alias s="pet"
+
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias ......="cd ../../../../.."
+alias .......="cd ../../../../../.."
+alias ........="cd ../../../../../../.."
+alias .........="cd ../../../../../../../.."
+
+function y() {
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  yazi "$@" --cwd-file="$tmp"
+  IFS= read -r -d '' cwd < "$tmp"
+  [ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+  rm -f -- "$tmp"
+}
+
+alias yazi="y"
+alias explore="y"
+alias lf="y"
+alias nnn="y"
+alias ranger="y"
+
+alias overview="zellij --layout overview"
+
+alias massrename="qmv -a -R -e nvim --format single-column"
+
+alias clipboard="xclip -selection clipboard"
+
+# ============================================================================
+# Project/Directory Navigation
+# ============================================================================
+
+# Recent directories (works with zoxide which you have)
+alias recent="zoxide query --list | fzf | xargs -I {} zoxide query {} && cd {}"
+
+# ============================================================================
+# Development Shortcuts
+# ============================================================================
+
+# Quick port killer
+function killport() {
+  lsof -ti:$1 | xargs kill -9
+}
+
+# Find process and kill it interactively
+function killp() {
+  ps aux | fzf | awk '{print $2}' | xargs kill -9
+}
+
+# JSON pretty print from clipboard
+alias jsonpretty="xclip -o -selection clipboard | jq . | tee >(xclip -selection clipboard)"
+
+# Quick HTTP server
+alias serve="python3 -m http.server"
+
+# ============================================================================
+# Enhanced File Operations
+# ============================================================================
+
+# Safe move/copy with progress
+alias mv="mv -iv"
+alias cp="cp -riv"
+alias mkdir="mkdir -pv"
+
+# Quick backup
+function bak() {
+  cp -r "$1" "$1.bak.$(date +%Y%m%d_%H%M%S)"
+}
+
+# ============================================================================
+# System Utilities
+# ============================================================================
+
+# Disk usage for current directory
+alias usage="dust -d 1"
+
+# Memory/CPU hogs
+alias topmem="ps aux | sort -nrk 4 | head -10"
+alias topcpu="ps aux | sort -nrk 3 | head -10"
+
+# Network connections
+alias ports="netstat -tulanp"
+alias listening="lsof -i -P | grep LISTEN"
+
+# Quick system info
+alias myip="curl -s ifconfig.me"
+alias localip="ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v 127.0.0.1"
+
+# ============================================================================
+# Git
+# ============================================================================
+
+alias g="git"
+
+# Quick status with less noise
+alias gs="git status -sb"
+alias gdc="git diff --cached"
+alias gl="git log --oneline --graph --decorate -20"
+
+# Fuzzy repo navigation
+function gg() {
+  local repo
+  repo=$(find ~/src -maxdepth 3 -name .git \( -type d -o -type f \) 2>/dev/null | while read gitdir; do
+    local dir="${gitdir%/.git}"
+    local branch=$(git -C "$dir" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+    printf '%s\t(%s)\n' "$dir" "$branch"
+  done | fzf --prompt="repo> " --query="$*" \
+    --delimiter='\t' \
+    --with-nth=1.. \
+    --preview "echo '── status ──' && git -C {1} status -sb && echo '' && echo '── diff ──' && git -C {1} diff --stat --color && echo '' && git -C {1} diff --color | delta --width=\$FZF_PREVIEW_COLUMNS" \
+    --preview-window=right:50%)
+  if [ -n "$repo" ]; then
+    local selected="${repo%%	*}"
+    cd "$selected"
+  fi
+}
+
+# Fuzzy branch switching
+function gb() {
+  git branch --all --sort=-committerdate | fzf --preview 'git log --oneline -10 {}' | sed 's/^[* ]*//' | sed 's|remotes/origin/||' | xargs git checkout
+}
+
+function gupdate() {
+  # Sync current branch with main / master
+  local main_branch=$(git remote show origin | grep "HEAD branch" | awk '{print $NF}')
+  git fetch origin
+  git rebase origin/$main_branch
+}
+
+# Undo last commit but keep changes
+alias gundo="git reset --soft HEAD~1"
+
+# Quick stash operations
+alias gspu="git stash push -u"
+alias gspo="git stash pop"
+
+function step() {
+  # Capture untracked files before staging
+  local untracked_files=$(git ls-files --others --exclude-standard)
+
+  git add -A :/
+
+  if ! git diff --cached --quiet HEAD; then
+    local branch_name=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+    local commit_msg=$(
+      (echo "Read the following changes. The current branch is '$branch_name'. Generate a concise commit message following conventional commit format. Output ONLY the commit message, nothing else."; echo ""; git diff --cached HEAD; if [ -n "$untracked_files" ]; then echo "$untracked_files" | xargs -I {} sh -c 'echo "New file: {}"; git show ":0:{}"' 2>/dev/null; fi) \
+      | copilot --allow-all-tools --silent --model "gpt-4.1"
+    )
+
+    if [ -z "$commit_msg" ]; then
+      echo "Failed to generate commit message"
+      return 1
+    fi
+
+    git commit -m "$commit_msg" && git push
+  else
+    echo "No changes to commit"
+    return 1
+  fi
+}
+
+function gn() {
+  local username=$(git config user.name | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+  [ -z "$username" ] && username=$(whoami)
+
+  local branch_name=""
+  local prompt="$*"
+  local has_changes=false
+
+  # Check if we're in a git repo and have any changes (tracked or untracked)
+  if git rev-parse --is-inside-work-tree &>/dev/null; then
+    if ! git diff --quiet HEAD 2>/dev/null || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+      has_changes=true
+    fi
+  fi
+
+  if [ -n "$prompt" ] || [ "$has_changes" = true ]; then
+    if [ -n "$prompt" ]; then
+      if [ "$has_changes" = true ]; then
+        branch_name=$(
+          (echo "Read the following changes and the prompt: '$prompt'. Generate a short, descriptive git branch name (lowercase, hyphens, no special chars, max 50 chars). Output ONLY the branch name, nothing else."; echo ""; git diff HEAD 2>/dev/null; git ls-files --others --exclude-standard | xargs -I {} sh -c 'echo "New file: {}"; cat "{}"' 2>/dev/null) \
+          | copilot --allow-all-tools --silent --model "gpt-4.1" \
+          | head -n 1 | tr -cd 'a-z0-9-'
+        )
+      else
+        branch_name=$(
+          echo "Generate a short, descriptive git branch name (lowercase, hyphens, no special chars, max 50 chars) for: '$prompt'. Output ONLY the branch name, nothing else." \
+          | copilot --allow-all-tools --silent --model "gpt-4.1" \
+          | head -n 1 | tr -cd 'a-z0-9-'
+        )
+      fi
+    else
+      branch_name=$(
+        (echo "Read the following changes and generate a short, descriptive git branch name (lowercase, hyphens, no special chars, max 50 chars). Output ONLY the branch name, nothing else."; echo ""; git diff HEAD 2>/dev/null; git ls-files --others --exclude-standard | xargs -I {} sh -c 'echo "New file: {}"; cat "{}"' 2>/dev/null) \
+        | copilot --allow-all-tools --silent --model "gpt-4.1" \
+        | head -n 1 | tr -cd 'a-z0-9-'
+      )
+    fi
+  fi
+
+  if [ -z "$branch_name" ]; then
+    branch_name=$(date +"%Y%m%d%H%M%S")
+  fi
+
+  local full_branch="dev/$username/$branch_name"
+  echo "Creating and checking out branch: $full_branch"
+  git checkout -b "$full_branch"
+}
+
+function gw() {
+  local root=$(git rev-parse --show-toplevel 2>/dev/null)
+  if [ -z "$root" ]; then
+    echo "Not inside a git repository"
+    return 1
+  fi
+
+  local branch_name="$1"
+  if [ -z "$branch_name" ]; then
+    echo "Usage: gw <moniker>"
+    return 1
+  fi
+
+  local repo_name=$(basename "$root")
+  local parent=$(dirname "$root")
+  local username=$(git config user.name | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+  [ -z "$username" ] && username=$(whoami)
+  local main_branch=$(git remote show origin 2>/dev/null | grep "HEAD branch" | awk '{print $NF}')
+  [ -z "$main_branch" ] && main_branch="main"
+
+  local full_branch="dev/$username/$branch_name"
+  local worktree_dir="$parent/$repo_name-$branch_name"
+
+  echo "Creating worktree at: $worktree_dir (branch: $full_branch from $main_branch)"
+  git fetch origin "$main_branch"
+  git config extensions.worktreeConfig true
+  git worktree add -b "$full_branch" "$worktree_dir" "origin/$main_branch" && cd "$worktree_dir" && \
+    git config --worktree core.hooksPath "$(git rev-parse --git-common-dir)/hooks"
+}
+
+# Fuzzy worktree switching
+function ggw() {
+  local selected
+  selected=$(git worktree list | fzf --prompt="worktree> " --query="$*" \
+    --preview "echo '── status ──' && git -C {1} status -sb && echo '' && echo '── log ──' && git -C {1} log --oneline --graph --decorate -10 --color" \
+    --preview-window=right:50%)
+  if [ -n "$selected" ]; then
+    local dir="${selected%% *}"
+    cd "$dir"
+  fi
+}
+
+function gd() {
+   git diff --name-only | fzf \
+     --preview 'git diff -- {} | delta --width=${FZF_PREVIEW_COLUMNS}' \
+     --preview-window='up,70%' \
+     --bind 'ctrl-j:preview-down,ctrl-k:preview-up,ctrl-u:preview-half-page-up,ctrl-i:preview-half-page-down' \
+     --height=100%
+}
+
+# ============================================================================
+# Fun Stuff
+# ============================================================================
+
+if command -v forlulz &> /dev/null; then
+  forlulz --effect ocean
+fi

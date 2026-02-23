@@ -1,0 +1,15 @@
+Host blacktail
+    User elk
+    Hostname blacktail.bayardo.info
+
+Host rpi
+    User rpi
+    Hostname 10.0.0.250
+
+Host garfio
+    User garfio
+    Hostname 10.0.0.11
+    ForwardX11 yes
+    ForwardX11Trusted yes
+    RequestTTY yes
+    RemoteCommand cd /media/usb24tb && exec $SHELL

@@ -1,0 +1,10 @@
+
+matches:
+  - triggers: [".m.", ".mailbasic."]
+    replace: |
+              Hi $|$,
+
+              Hope you are doing great!
+
+              Thanks,
+              Julian
