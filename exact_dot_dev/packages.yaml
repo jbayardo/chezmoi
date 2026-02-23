@@ -1,0 +1,1063 @@
+# Cross-platform package manifest
+# Used by install-packages.py to declaratively install packages.
+# configuration hash: this comment changes when you edit this file, triggering chezmoi run_onchange
+
+# ============================================================================
+# Sources: how to detect, check, and install from each package manager
+# ============================================================================
+sources:
+  apt:
+    available: "dpkg --version"
+    check: "dpkg -s {pkg}"
+    install: "sudo apt-get install -y {pkg}"
+
+  brew:
+    available: "brew --version"
+    check: "brew list {pkg}"
+    install: "brew install {pkg}"
+
+  winget:
+    available: "winget --version"
+    check: "winget list --id {pkg} -e --accept-source-agreements"
+    install: "winget install --accept-package-agreements --accept-source-agreements --silent --disable-interactivity {pkg}"
+
+  scoop:
+    available: "scoop --version"
+    check: "scoop list {pkg}"
+    install: "scoop install {pkg}"
+
+  cargo:
+    available: "cargo --version"
+    check_cmd: "cargo install --list"
+    check_grep: "^{pkg} "
+    install: "cargo binstall --no-confirm --locked {pkg}"
+
+  go:
+    available: "go version"
+    check_binary: true
+    install: "go install {pkg}@latest"
+
+  uv:
+    available: "uv --version"
+    check_cmd: "uv tool list"
+    check_grep: "^{pkg} "
+    install: "uv tool install {pkg}"
+
+  dotnet:
+    available: "dotnet --version"
+    check_cmd: "dotnet tool list -g"
+    check_grep: "^{pkg}\\s"
+    install: "dotnet tool install -g {pkg}"
+
+  npm:
+    available: "npm --version"
+    check: "npm list -g {pkg}"
+    install: "npm install -g {pkg}"
+
+  snap:
+    available: "snap --version"
+    check: "snap list {pkg}"
+    install: "sudo snap install {pkg}"
+
+  powershell:
+    available: "pwsh -c exit"
+    check: 'pwsh -NoProfile -c "if (Get-Module -Name {pkg} -ListAvailable) {{ exit 0 }} else {{ exit 1 }}"'
+    install: 'pwsh -NoProfile -c "Install-Module -Name {pkg} -Scope CurrentUser -Force -AllowPrerelease -SkipPublisherCheck"'
+
+# ============================================================================
+# Profiles: define per-OS source preference ranking
+# ============================================================================
+profiles:
+  personal:
+    source_preference:
+      linux: [cargo, go, uv, dotnet, npm, apt, snap]
+      darwin: [cargo, go, uv, dotnet, npm, brew]
+      windows: [cargo, go, uv, dotnet, npm, winget, scoop, powershell]
+
+  work:
+    source_preference:
+      linux: [cargo, go, uv, dotnet, npm, apt, snap]
+      darwin: [cargo, go, uv, dotnet, npm, brew]
+      windows: [cargo, go, dotnet, uv, npm, winget, scoop, powershell]
+
+# ============================================================================
+# Packages
+# ============================================================================
+# Each package has:
+#   sources: mapping of source_name -> package_id in that source
+#   profiles: which profiles include this package
+#   binary: (optional) binary name to check for go packages or overrides
+
+packages:
+  # ---------------------------------------------------------------------------
+  # Core / Baseline
+  # ---------------------------------------------------------------------------
+  chezmoi:
+    profiles: [personal, work]
+    sources:
+      apt: chezmoi
+      winget: twpayne.chezmoi
+      brew: chezmoi
+      snap: chezmoi
+
+  keepassxc:
+    profiles: [personal]
+    sources:
+      apt: keepassxc
+      winget: KeePassXCTeam.KeePassXC
+      brew: keepassxc
+
+  git:
+    profiles: [personal, work]
+    sources:
+      apt: git
+      winget: Git.Git
+      brew: git
+
+  powershell:
+    profiles: [personal, work]
+    sources:
+      apt: powershell
+      winget: Microsoft.PowerShell
+      brew: powershell
+
+  visual-studio-code:
+    profiles: [personal, work]
+    sources:
+      winget: Microsoft.VisualStudioCode
+      snap: code
+      brew: visual-studio-code
+    binary: code
+
+  neovim:
+    profiles: [personal, work]
+    sources:
+      apt: neovim
+      winget: Neovim.Neovim
+      brew: neovim
+      snap: nvim
+    binary: nvim
+
+  vlc:
+    profiles: [personal]
+    sources:
+      apt: vlc
+      winget: VideoLAN.VLC
+      brew: vlc
+
+  ffmpeg:
+    profiles: [personal, work]
+    sources:
+      apt: ffmpeg
+      winget: Gyan.FFmpeg
+      brew: ffmpeg
+
+  7zip:
+    profiles: [personal, work]
+    sources:
+      apt: 7zip
+      winget: 7zip.7zip
+      brew: p7zip
+
+  gnupg:
+    profiles: [personal, work]
+    sources:
+      apt: gnupg
+      winget: GnuPG.GnuPG
+      brew: gnupg
+
+  openjdk:
+    profiles: [personal]
+    sources:
+      apt: default-jdk
+      winget: Microsoft.OpenJDK.21
+      brew: openjdk
+
+  golang:
+    profiles: [personal, work]
+    sources:
+      apt: golang
+      winget: GoLang.Go
+      brew: go
+    binary: go
+
+  rustup:
+    profiles: [personal, work]
+    sources:
+      apt: rustup
+      winget: rustup
+      brew: rustup
+
+  nvm:
+    profiles: [personal]
+    sources:
+      winget: CoreyButler.NVMforWindows
+      brew: nvm
+
+  # ---------------------------------------------------------------------------
+  # Cosmetic / Desktop
+  # ---------------------------------------------------------------------------
+  powertoys:
+    profiles: [personal]
+    sources:
+      winget: Microsoft.PowerToys
+
+  auto-dark-mode:
+    profiles: [personal]
+    sources:
+      winget: XP8JK4HZBVF435
+
+  wiztree:
+    profiles: [personal]
+    sources:
+      winget: AntibodySoftware.WizTree
+
+  # ---------------------------------------------------------------------------
+  # Command Line Tools (cross-platform via cargo)
+  # ---------------------------------------------------------------------------
+  ripgrep:
+    profiles: [personal, work]
+    sources:
+      apt: ripgrep
+      cargo: ripgrep
+      winget: BurntSushi.ripgrep.MSVC
+      brew: ripgrep
+    binary: rg
+
+  bat:
+    profiles: [personal, work]
+    sources:
+      apt: bat
+      cargo: bat
+      winget: sharkdp.bat
+      brew: bat
+
+  fd:
+    profiles: [personal, work]
+    sources:
+      apt: fd-find
+      cargo: fd-find
+      winget: sharkdp.fd
+      brew: fd
+    binary: fd
+
+  fzf:
+    profiles: [personal, work]
+    sources:
+      apt: fzf
+      winget: fzf
+      brew: fzf
+      cargo: skim
+    binary: fzf
+
+  jq:
+    profiles: [personal, work]
+    sources:
+      apt: jq
+      winget: stedolan.jq
+      brew: jq
+
+  zoxide:
+    profiles: [personal, work]
+    sources:
+      apt: zoxide
+      cargo: zoxide
+      winget: zoxide
+      brew: zoxide
+
+  delta:
+    profiles: [personal, work]
+    sources:
+      apt: git-delta
+      cargo: git-delta
+      winget: dandavison.delta
+      brew: git-delta
+    binary: delta
+
+  lsd:
+    profiles: [personal, work]
+    sources:
+      cargo: lsd
+      brew: lsd
+      apt: lsd
+
+  hexyl:
+    profiles: [personal, work]
+    sources:
+      cargo: hexyl
+      brew: hexyl
+
+  broot:
+    profiles: [personal, work]
+    sources:
+      cargo: broot
+      brew: broot
+
+  ast-grep:
+    profiles: [personal, work]
+    sources:
+      cargo: ast-grep
+      brew: ast-grep
+    binary: sg
+
+  fselect:
+    profiles: [personal, work]
+    sources:
+      cargo: fselect
+
+  bottom:
+    profiles: [personal, work]
+    sources:
+      cargo: bottom
+      brew: bottom
+      winget: bottom
+    binary: btm
+
+  hyperfine:
+    profiles: [personal, work]
+    sources:
+      cargo: hyperfine
+      winget: sharkdp.hyperfine
+      brew: hyperfine
+
+  difftastic:
+    profiles: [personal, work]
+    sources:
+      cargo: difftastic
+      brew: difftastic
+    binary: difft
+
+  tokei:
+    profiles: [personal, work]
+    sources:
+      cargo: tokei
+      brew: tokei
+
+  grex:
+    profiles: [personal, work]
+    sources:
+      cargo: grex
+
+  srgn:
+    profiles: [personal, work]
+    sources:
+      cargo: srgn
+
+  just:
+    profiles: [personal, work]
+    sources:
+      cargo: just
+      brew: just
+
+  watchexec:
+    profiles: [personal, work]
+    sources:
+      cargo: watchexec-cli
+      brew: watchexec
+    binary: watchexec
+
+  sd:
+    profiles: [personal, work]
+    sources:
+      cargo: sd
+      brew: sd
+
+  choose:
+    profiles: [personal, work]
+    sources:
+      cargo: choose
+
+  rnr:
+    profiles: [personal, work]
+    sources:
+      cargo: rnr
+
+  pipe-rename:
+    profiles: [personal, work]
+    sources:
+      cargo: pipe-rename
+    binary: renamer
+
+  htmlq:
+    profiles: [personal, work]
+    sources:
+      cargo: htmlq
+
+  qsv:
+    profiles: [personal, work]
+    sources:
+      cargo: qsv
+      scoop: qsv
+
+  csview:
+    profiles: [personal, work]
+    sources:
+      cargo: csview
+
+  csvlens:
+    profiles: [personal, work]
+    sources:
+      cargo: csvlens
+
+  tidy-viewer:
+    profiles: [personal, work]
+    sources:
+      cargo: tidy-viewer
+    binary: tv
+
+  topgrade:
+    profiles: [personal, work]
+    sources:
+      cargo: topgrade
+
+  procs:
+    profiles: [personal, work]
+    sources:
+      cargo: procs
+
+  viddy:
+    profiles: [personal, work]
+    sources:
+      cargo: viddy
+      brew: viddy
+
+  kalker:
+    profiles: [personal, work]
+    sources:
+      cargo: kalker
+      winget: PaddiM8.kalker
+
+  numbat:
+    profiles: [personal, work]
+    sources:
+      cargo: numbat-cli
+      brew: numbat
+    binary: numbat
+
+  navi:
+    profiles: [personal, work]
+    sources:
+      cargo: navi
+      brew: navi
+
+  aichat:
+    profiles: [personal, work]
+    sources:
+      cargo: aichat
+
+  television:
+    profiles: [personal, work]
+    sources:
+      cargo: television
+    binary: tv
+
+  wthrr:
+    profiles: [personal]
+    sources:
+      cargo: wthrr
+
+  yazi:
+    profiles: [personal, work]
+    sources:
+      cargo: yazi-fm
+      brew: yazi
+    binary: yazi
+
+  yazi-cli:
+    profiles: [personal, work]
+    sources:
+      cargo: yazi-cli
+    binary: ya
+
+  rage:
+    profiles: [personal]
+    sources:
+      cargo: rage
+
+  rustic:
+    profiles: [personal]
+    sources:
+      cargo: rustic-rs
+    binary: rustic
+
+  kondo:
+    profiles: [personal, work]
+    sources:
+      cargo: kondo
+
+  dua:
+    profiles: [personal, work]
+    sources:
+      cargo: dua-cli
+      brew: dua-cli
+    binary: dua
+
+  gping:
+    profiles: [personal, work]
+    sources:
+      cargo: gping
+      brew: gping
+      winget: gping
+
+  trippy:
+    profiles: [personal, work]
+    sources:
+      cargo: trippy
+      brew: trippy
+    binary: trip
+
+  bandwhich:
+    profiles: [personal, work]
+    sources:
+      cargo: bandwhich
+      brew: bandwhich
+
+  # ---------------------------------------------------------------------------
+  # Go packages
+  # ---------------------------------------------------------------------------
+  lazygit:
+    profiles: [personal, work]
+    sources:
+      go: github.com/jesseduffield/lazygit
+      winget: JesseDuffield.lazygit
+      brew: lazygit
+    binary: lazygit
+
+  lazydocker:
+    profiles: [personal]
+    sources:
+      go: github.com/jesseduffield/lazydocker
+      brew: lazydocker
+    binary: lazydocker
+
+  pget:
+    profiles: [personal]
+    sources:
+      go: github.com/Code-Hex/pget/cmd/pget
+    binary: pget
+
+  xq:
+    profiles: [personal, work]
+    sources:
+      go: github.com/sibprogrammer/xq
+      brew: xq
+    binary: xq
+
+  dasel:
+    profiles: [personal, work]
+    sources:
+      go: github.com/tomwright/dasel/v2/cmd/dasel
+      brew: dasel
+    binary: dasel
+
+  codesearch:
+    profiles: [personal, work]
+    sources:
+      go: github.com/google/codesearch/cmd/...
+    binary: csearch
+
+  git-who:
+    profiles: [personal, work]
+    sources:
+      go: github.com/sinclairtarget/git-who
+    binary: git-who
+
+  rclone:
+    profiles: [personal]
+    sources:
+      go: github.com/rclone/rclone
+      apt: rclone
+      winget: Rclone.Rclone
+      brew: rclone
+    binary: rclone
+
+  direnv:
+    profiles: [personal, work]
+    sources:
+      go: github.com/direnv/direnv
+      apt: direnv
+      brew: direnv
+    binary: direnv
+
+  pet:
+    profiles: [personal]
+    sources:
+      go: github.com/knqyf263/pet
+    binary: pet
+
+  snipkit:
+    profiles: [personal]
+    sources:
+      go: github.com/lemoony/snipkit
+    binary: snipkit
+
+  fx:
+    profiles: [personal, work]
+    sources:
+      go: github.com/antonmedv/fx
+      brew: fx
+    binary: fx
+
+  # ---------------------------------------------------------------------------
+  # Python tools (uv)
+  # ---------------------------------------------------------------------------
+  aider-chat:
+    profiles: [personal]
+    sources:
+      uv: aider-chat
+    binary: aider
+
+  llm:
+    profiles: [personal]
+    sources:
+      uv: llm
+    binary: llm
+
+  paginate-json:
+    profiles: [personal]
+    sources:
+      uv: paginate-json
+
+  csvkit:
+    profiles: [personal, work]
+    sources:
+      uv: csvkit
+    binary: csvlook
+
+  toolong:
+    profiles: [personal, work]
+    sources:
+      uv: toolong
+    binary: tl
+
+  visidata:
+    profiles: [personal, work]
+    sources:
+      uv: visidata
+    binary: vd
+
+  # ---------------------------------------------------------------------------
+  # .NET tools
+  # ---------------------------------------------------------------------------
+  dotnet-dump:
+    profiles: [work]
+    sources:
+      dotnet: dotnet-dump
+
+  dotnet-trace:
+    profiles: [work]
+    sources:
+      dotnet: dotnet-trace
+
+  dotnet-coverage:
+    profiles: [work]
+    sources:
+      dotnet: dotnet-coverage
+
+  dotnet-counters:
+    profiles: [work]
+    sources:
+      dotnet: dotnet-counters
+
+  dotnet-gcdump:
+    profiles: [work]
+    sources:
+      dotnet: dotnet-gcdump
+
+  dotnet-format:
+    profiles: [work]
+    sources:
+      dotnet: dotnet-format
+
+  dotnet-sos:
+    profiles: [work]
+    sources:
+      dotnet: dotnet-sos
+
+  dotnet-stack:
+    profiles: [work]
+    sources:
+      dotnet: dotnet-stack
+
+  dotnet-ef:
+    profiles: [work]
+    sources:
+      dotnet: dotnet-ef
+
+  dotnet-aspnet-codegenerator:
+    profiles: [work]
+    sources:
+      dotnet: dotnet-aspnet-codegenerator
+
+  slngen:
+    profiles: [work]
+    sources:
+      dotnet: Microsoft.VisualStudio.SlnGen.Tool
+    binary: slngen
+
+  swashbuckle-cli:
+    profiles: [work]
+    sources:
+      dotnet: Swashbuckle.AspNetCore.Cli
+
+  sarif-multitool:
+    profiles: [work]
+    sources:
+      dotnet: Sarif.Multitool
+
+  # ---------------------------------------------------------------------------
+  # npm tools
+  # ---------------------------------------------------------------------------
+  github-copilot:
+    profiles: [personal, work]
+    sources:
+      npm: "@github/copilot"
+
+  codex:
+    profiles: [personal, work]
+    sources:
+      npm: "@openai/codex"
+
+  claude-code:
+    profiles: [personal, work]
+    sources:
+      npm: "@anthropic-ai/claude-code"
+    binary: claude
+
+  # ---------------------------------------------------------------------------
+  # PowerShell modules (Windows only)
+  # ---------------------------------------------------------------------------
+  posh-git:
+    profiles: [personal, work]
+    sources:
+      powershell: posh-git
+
+  psreadline:
+    profiles: [personal, work]
+    sources:
+      powershell: PSReadLine
+
+  psfzf:
+    profiles: [personal, work]
+    sources:
+      powershell: PSFzf
+
+  terminal-icons:
+    profiles: [personal, work]
+    sources:
+      powershell: Terminal-Icons
+
+  az-module:
+    profiles: [work]
+    sources:
+      powershell: Az
+
+  az-tools-predictor:
+    profiles: [work]
+    sources:
+      powershell: Az.Tools.Predictor
+
+  completion-predictor:
+    profiles: [personal, work]
+    sources:
+      powershell: CompletionPredictor
+
+  directory-predictor:
+    profiles: [personal, work]
+    sources:
+      powershell: DirectoryPredictor
+
+  microsoft-graph:
+    profiles: [work]
+    sources:
+      powershell: Microsoft.Graph
+
+  posh-ssh:
+    profiles: [personal]
+    sources:
+      powershell: Posh-SSH
+
+  burnttoast:
+    profiles: [personal]
+    sources:
+      powershell: BurntToast
+
+  psparsehtml:
+    profiles: [personal]
+    sources:
+      powershell: PSParseHTML
+
+  pswritehtml:
+    profiles: [personal]
+    sources:
+      powershell: PSWriteHTML
+
+  # ---------------------------------------------------------------------------
+  # Development (winget/apt heavy)
+  # ---------------------------------------------------------------------------
+  docker:
+    profiles: [personal, work]
+    sources:
+      apt: docker.io
+      winget: Docker.DockerDesktop
+      brew: docker
+
+  cmake:
+    profiles: [personal, work]
+    sources:
+      apt: cmake
+      winget: cmake
+      brew: cmake
+
+  build-essential:
+    profiles: [personal, work]
+    sources:
+      apt: build-essential
+
+  clang:
+    profiles: [personal, work]
+    sources:
+      apt: clang
+      winget: LLVM
+      brew: llvm
+
+  aria2:
+    profiles: [personal, work]
+    sources:
+      apt: aria2
+      winget: aria2.aria2
+      brew: aria2
+
+  nmap:
+    profiles: [personal]
+    sources:
+      apt: nmap
+      winget: Insecure.Nmap
+      brew: nmap
+
+  rsync:
+    profiles: [personal, work]
+    sources:
+      apt: rsync
+      brew: rsync
+
+  imagemagick:
+    profiles: [personal]
+    sources:
+      apt: imagemagick
+      winget: ImageMagick.Q16-HDRI
+      brew: imagemagick
+
+  github-cli:
+    profiles: [personal, work]
+    sources:
+      apt: gh
+      winget: GitHub.cli
+      brew: gh
+    binary: gh
+
+  oh-my-posh:
+    profiles: [personal, work]
+    sources:
+      winget: JanDeDobbeleer.OhMyPosh
+      brew: jandedobbeleer/oh-my-posh/oh-my-posh
+    binary: oh-my-posh
+
+  miller:
+    profiles: [personal, work]
+    sources:
+      winget: Miller.Miller
+      brew: miller
+      apt: miller
+    binary: mlr
+
+  hledger:
+    profiles: [personal]
+    sources:
+      winget: simonmichael.hledger
+      apt: hledger
+      brew: hledger
+
+  less:
+    profiles: [personal, work]
+    sources:
+      winget: jftuga.less
+      apt: less
+
+  yq:
+    profiles: [personal, work]
+    sources:
+      winget: yq
+      brew: yq
+      apt: yq
+      go: github.com/mikefarah/yq/v4
+    binary: yq
+
+  # ---------------------------------------------------------------------------
+  # Scoop-only packages (Windows)
+  # ---------------------------------------------------------------------------
+  kanata:
+    profiles: [personal]
+    sources:
+      scoop: kanata
+      cargo: kanata
+
+  poppler:
+    profiles: [personal]
+    sources:
+      scoop: poppler
+      apt: poppler-utils
+      brew: poppler
+
+  duf:
+    profiles: [personal, work]
+    sources:
+      scoop: duf
+      brew: duf
+      apt: duf
+
+  fq-tool:
+    profiles: [personal]
+    sources:
+      scoop: fq
+      brew: fq
+      apt: fq
+      go: github.com/wader/fq
+    binary: fq
+
+  # ---------------------------------------------------------------------------
+  # Work-only (Windows heavy)
+  # ---------------------------------------------------------------------------
+  helm:
+    profiles: []
+    sources:
+      winget: Helm.Helm
+      brew: helm
+
+  terraform:
+    profiles: []
+    sources:
+      winget: Hashicorp.Terraform
+      brew: terraform
+
+  jetbrains-toolbox:
+    profiles: []
+    sources:
+      winget: JetBrains.Toolbox
+
+  azure-cli:
+    profiles: [work]
+    sources:
+      winget: Microsoft.AzureCLI
+      brew: azure-cli
+      apt: azure-cli
+    binary: az
+
+  azure-storage-explorer:
+    profiles: [work]
+    sources:
+      winget: Microsoft.Azure.StorageExplorer
+
+  azcopy:
+    profiles: [work]
+    sources:
+      winget: Microsoft.Azure.AZCopy.10
+    binary: azcopy
+
+  # ---------------------------------------------------------------------------
+  # Personal extras
+  # ---------------------------------------------------------------------------
+  calibre:
+    profiles: [personal]
+    sources:
+      winget: calibre.calibre
+      apt: calibre
+      brew: calibre
+
+  anki:
+    profiles: [personal]
+    sources:
+      winget: Anki.Anki
+      brew: anki
+      apt: anki
+
+  qbittorrent:
+    profiles: [personal]
+    sources:
+      winget: qBittorrent.qBittorrent
+      apt: qbittorrent
+      brew: qbittorrent
+
+  yt-dlp:
+    profiles: [personal]
+    sources:
+      winget: yt-dlp.yt-dlp
+      brew: yt-dlp
+      apt: yt-dlp
+
+  zotero:
+    profiles: [personal]
+    sources:
+      winget: DigitalScholar.Zotero
+      brew: zotero
+      snap: zotero-snap
+
+  firefox:
+    profiles: [personal]
+    sources:
+      winget: Mozilla.Firefox
+      apt: firefox
+      brew: firefox
+
+  spotify:
+    profiles: [personal]
+    sources:
+      winget: Spotify.Spotify
+      snap: spotify
+      brew: spotify
+
+  steam:
+    profiles: [personal]
+    sources:
+      winget: Valve.Steam
+      apt: steam
+
+  syncthing:
+    profiles: [personal]
+    sources:
+      winget: SyncTrayzor.SyncTrayzor
+      apt: syncthing
+      brew: syncthing
+
+  # ---------------------------------------------------------------------------
+  # Linux-only (apt/snap)
+  # ---------------------------------------------------------------------------
+  zsh:
+    profiles: [personal, work]
+    sources:
+      apt: zsh
+      brew: zsh
+
+  curl:
+    profiles: [personal, work]
+    sources:
+      apt: curl
+      brew: curl
+
+  wget:
+    profiles: [personal, work]
+    sources:
+      apt: wget
+      winget: GNU.Wget2
+      brew: wget
+
+  unzip:
+    profiles: [personal, work]
+    sources:
+      apt: unzip
+
+  atuin:
+    profiles: [personal, work]
+    sources:
+      cargo: atuin
+      brew: atuin

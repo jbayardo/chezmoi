@@ -1,4 +1,5 @@
 {{- $email := promptStringOnce . "email" "Email address" "julian@bayardo.info" -}}
+{{- $profile := promptStringOnce . "profile" "Profile (personal/work)" "personal" -}}
 
 pager = "less -R"
 umask = 0o022
@@ -13,6 +14,7 @@ umask = 0o022
 [data]
     email = {{ $email | quote }}
     name = "Julian Bayardo Spadafora"
+    profile = {{ $profile | quote }}
 
 [git]
     autoCommit = true

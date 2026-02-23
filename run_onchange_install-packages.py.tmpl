@@ -1,0 +1,28 @@
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
+# manifest hash: {{ include (joinPath .chezmoi.sourceDir "exact_dot_dev" "packages.yaml") | sha256sum }}
+"""Trigger install-packages.py when packages.yaml changes."""
+
+import subprocess
+import sys
+from pathlib import Path
+
+script = Path.home() / ".dev" / "python" / "install-packages.py"
+manifest = Path.home() / ".dev" / "packages.yaml"
+profile = {{ .profile | quote }}
+
+if not script.exists():
+    print(f"install-packages.py not found at {script}, skipping")
+    sys.exit(0)
+
+if not manifest.exists():
+    print(f"packages.yaml not found at {manifest}, skipping")
+    sys.exit(0)
+
+result = subprocess.run(
+    ["uv", "run", str(script), "--profile", profile, "--manifest", str(manifest)],
+)
+sys.exit(result.returncode)
