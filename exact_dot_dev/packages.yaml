@@ -445,6 +445,35 @@ packages:
     sources:
       cargo: aichat
 
+  skim:
+    profiles: [personal, work]
+    sources:
+      cargo: skim
+    binary: sk
+
+  ouch:
+    profiles: [personal, work]
+    sources:
+      cargo: ouch
+
+  zellij:
+    profiles: [personal, work]
+    sources:
+      cargo: zellij
+      brew: zellij
+
+  pueue:
+    profiles: [personal, work]
+    sources:
+      cargo: pueue
+      brew: pueue
+
+  hurl:
+    profiles: [personal, work]
+    sources:
+      cargo: hurl
+      brew: hurl
+
   television:
     profiles: [personal, work]
     sources:
