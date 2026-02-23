@@ -10,3 +10,5 @@
 *.db
 nul
 .claude/
+
+.mypy_cache/

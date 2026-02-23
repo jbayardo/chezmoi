@@ -1,0 +1,30 @@
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
+# configuration hash: {{ include (joinPath .chezmoi.sourceDir "komorebi.json") | sha256sum }}
+"""Reload komorebi configuration if it is running."""
+
+import shutil
+import subprocess
+import sys
+
+if not shutil.which("komorebic"):
+    print("komorebic is not installed. Skipping setup.")
+    sys.exit(0)
+
+# Check that komorebi is running
+result = subprocess.run(
+    ["komorebic", "state"],
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
+)
+if result.returncode != 0:
+    print("komorebi is not running. Skipping reload.")
+    sys.exit(0)
+
+subprocess.run(
+    ["komorebic", "reload-configuration"],
+    stdout=subprocess.DEVNULL,
+)

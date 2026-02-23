@@ -304,18 +304,9 @@ alias gl="git log --oneline --graph --decorate -20"
 # Fuzzy repo navigation
 function gg() {
   local repo
-  repo=$(find ~/src -maxdepth 3 -name .git \( -type d -o -type f \) 2>/dev/null | while read gitdir; do
-    local dir="${gitdir%/.git}"
-    local branch=$(git -C "$dir" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
-    printf '%s\t(%s)\n' "$dir" "$branch"
-  done | fzf --prompt="repo> " --query="$*" \
-    --delimiter='\t' \
-    --with-nth=1.. \
-    --preview "echo '── status ──' && git -C {1} status -sb && echo '' && echo '── diff ──' && git -C {1} diff --stat --color && echo '' && git -C {1} diff --color | delta --width=\$FZF_PREVIEW_COLUMNS" \
-    --preview-window=right:50%)
+  repo=$(uv run ~/.dev/python/gg.py "$@")
   if [ -n "$repo" ]; then
-    local selected="${repo%%	*}"
-    cd "$selected"
+    cd "$repo"
   fi
 }
 
@@ -339,76 +330,11 @@ alias gspu="git stash push -u"
 alias gspo="git stash pop"
 
 function step() {
-  # Capture untracked files before staging
-  local untracked_files=$(git ls-files --others --exclude-standard)
-
-  git add -A :/
-
-  if ! git diff --cached --quiet HEAD; then
-    local branch_name=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
-    local commit_msg=$(
-      (echo "Read the following changes. The current branch is '$branch_name'. Generate a concise commit message following conventional commit format. Output ONLY the commit message, nothing else."; echo ""; git diff --cached HEAD; if [ -n "$untracked_files" ]; then echo "$untracked_files" | xargs -I {} sh -c 'echo "New file: {}"; git show ":0:{}"' 2>/dev/null; fi) \
-      | copilot --allow-all-tools --silent --model "gpt-4.1"
-    )
-
-    if [ -z "$commit_msg" ]; then
-      echo "Failed to generate commit message"
-      return 1
-    fi
-
-    git commit -m "$commit_msg" && git push
-  else
-    echo "No changes to commit"
-    return 1
-  fi
+  uv run ~/.dev/python/step.py "$@"
 }
 
 function gn() {
-  local username=$(git config user.name | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
-  [ -z "$username" ] && username=$(whoami)
-
-  local branch_name=""
-  local prompt="$*"
-  local has_changes=false
-
-  # Check if we're in a git repo and have any changes (tracked or untracked)
-  if git rev-parse --is-inside-work-tree &>/dev/null; then
-    if ! git diff --quiet HEAD 2>/dev/null || [ -n "$(git ls-files --others --exclude-standard)" ]; then
-      has_changes=true
-    fi
-  fi
-
-  if [ -n "$prompt" ] || [ "$has_changes" = true ]; then
-    if [ -n "$prompt" ]; then
-      if [ "$has_changes" = true ]; then
-        branch_name=$(
-          (echo "Read the following changes and the prompt: '$prompt'. Generate a short, descriptive git branch name (lowercase, hyphens, no special chars, max 50 chars). Output ONLY the branch name, nothing else."; echo ""; git diff HEAD 2>/dev/null; git ls-files --others --exclude-standard | xargs -I {} sh -c 'echo "New file: {}"; cat "{}"' 2>/dev/null) \
-          | copilot --allow-all-tools --silent --model "gpt-4.1" \
-          | head -n 1 | tr -cd 'a-z0-9-'
-        )
-      else
-        branch_name=$(
-          echo "Generate a short, descriptive git branch name (lowercase, hyphens, no special chars, max 50 chars) for: '$prompt'. Output ONLY the branch name, nothing else." \
-          | copilot --allow-all-tools --silent --model "gpt-4.1" \
-          | head -n 1 | tr -cd 'a-z0-9-'
-        )
-      fi
-    else
-      branch_name=$(
-        (echo "Read the following changes and generate a short, descriptive git branch name (lowercase, hyphens, no special chars, max 50 chars). Output ONLY the branch name, nothing else."; echo ""; git diff HEAD 2>/dev/null; git ls-files --others --exclude-standard | xargs -I {} sh -c 'echo "New file: {}"; cat "{}"' 2>/dev/null) \
-        | copilot --allow-all-tools --silent --model "gpt-4.1" \
-        | head -n 1 | tr -cd 'a-z0-9-'
-      )
-    fi
-  fi
-
-  if [ -z "$branch_name" ]; then
-    branch_name=$(date +"%Y%m%d%H%M%S")
-  fi
-
-  local full_branch="dev/$username/$branch_name"
-  echo "Creating and checking out branch: $full_branch"
-  git checkout -b "$full_branch"
+  uv run ~/.dev/python/gn.py "$@"
 }
 
 function gw() {
@@ -454,11 +380,7 @@ function ggw() {
 }
 
 function gd() {
-   git diff --name-only | fzf \
-     --preview 'git diff -- {} | delta --width=${FZF_PREVIEW_COLUMNS}' \
-     --preview-window='up,70%' \
-     --bind 'ctrl-j:preview-down,ctrl-k:preview-up,ctrl-u:preview-half-page-up,ctrl-i:preview-half-page-down' \
-     --height=100%
+  uv run ~/.dev/python/gd.py "$@"
 }
 
 # ============================================================================

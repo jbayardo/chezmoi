@@ -1,0 +1,28 @@
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
+# configuration hash: {{ include (joinPath .chezmoi.sourceDir "exact_dot_dev/exact_powershell/oh-my-posh.json") | sha256sum }}
+"""Regenerate oh-my-posh shell init script."""
+
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+if not shutil.which("oh-my-posh"):
+    print("oh-my-posh is not installed. Skipping setup.")
+    sys.exit(0)
+
+config_path = "{{ joinPath .chezmoi.sourceDir "exact_dot_dev/exact_powershell/oh-my-posh.json" }}"
+output_path = Path.home() / ".dev" / "powershell" / "shell.ps1"
+output_path.parent.mkdir(parents=True, exist_ok=True)
+
+result = subprocess.run(
+    ["oh-my-posh", "init", "pwsh", "--config", config_path, "--print"],
+    capture_output=True,
+    text=True,
+)
+
+output_path.write_text(result.stdout, encoding="utf-8")

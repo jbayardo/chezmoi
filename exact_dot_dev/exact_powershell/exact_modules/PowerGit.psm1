@@ -11,23 +11,7 @@ function global:prc {
 }
 
 function global:step {
-  $TemporaryOutputFilePath = [System.IO.Path]::GetTempFileName()
-  try {
-    $stepDiff = git diff HEAD
-    $stepPrompt = @"
-Generate git commit description for these changes. Write the subject, one empty lines, and then the body. Don't include any other text.
-
-Changes:
-$stepDiff
-"@
-    Invoke-CopilotPrompt -Prompt $stepPrompt | Out-File -Encoding utf8 $TemporaryOutputFilePath
-    git add -A :/
-    git commit -F $TemporaryOutputFilePath
-    git push -u origin
-  }
-  finally {
-    Remove-Item $TemporaryOutputFilePath -ErrorAction SilentlyContinue
-  }
+  uv run (Resolve-Path "~/.dev/python/step.py") @Args
 }
 
 function global:sync {
@@ -46,21 +30,7 @@ function global:sync {
 }
 
 function global:gd {
-  if ([string]::IsNullOrEmpty($args)) {
-    $arguments = ""
-  }
-  else {
-    $arguments = $args
-  }
-
-  $RepoRoot = (git rev-parse --show-toplevel 2>$null | Out-String).Trim();
-  try {
-    Push-Location $RepoRoot
-    Invoke-Expression "git diff --name-only $arguments" | fzf --ansi --preview "git diff $arguments --color=always -- {1} | delta --width $($Host.UI.RawUI.WindowSize.Width)" --color "hl:-1:underline,hl+:-1:underline:reverse" --preview-window 'up,80%,border-bottom,+{2}+3/3,~3'
-  }
-  finally {
-    Pop-Location
-  }
+  uv run (Resolve-Path "~/.dev/python/gd.py") @args
 }
 
 function global:gn {
@@ -69,41 +39,15 @@ function global:gn {
     [switch]$Date
   )
 
-  $username = ((git config user.email).Trim() -split "@")[0]
-  
-  if (-not [string]::IsNullOrEmpty($Moniker)) {
-    if ($Moniker -match "/") {
-      $branch = $Moniker
-    }
-    else {
-      $branch = "dev/$username/$Moniker"
-    }
-  }
-  elseif ($Date) {
+  if ($Date) {
+    $username = ((git config user.email).Trim() -split "@")[0]
     $branchName = "$(Get-Date -UFormat "%Y%m%d%H%M%S")"
-    $branch = "dev/$username/$branchName"
+    git checkout -b "dev/$username/$branchName"
+  } elseif (-not [string]::IsNullOrEmpty($Moniker) -and $Moniker -match "/") {
+    git checkout -b $Moniker
+  } else {
+    uv run (Resolve-Path "~/.dev/python/gn.py") $Moniker
   }
-  else {
-    $hasChanges = git status --porcelain | Select-String -Pattern "^\s*[MADRCU]{1,2}" -Quiet
-    if ($hasChanges) {
-      $branchDiff = git diff
-      $branchPrompt = @"
-Generate a concise and descriptive branch name for a git branch based on these git changes. Only provide the branch name without any additional text. Use hyphens to separate words. Avoid special characters.
-
-Changes:
-$branchDiff
-"@
-      $branchName = Invoke-CopilotPrompt -Prompt $branchPrompt
-    }
-
-    if ([string]::IsNullOrEmpty($branchName)) {
-      $branchName = "$(Get-Date -UFormat "%Y%m%d%H%M%S")"
-    }
-
-    $branch = "dev/$username/$branchName"
-  }
-
-  git checkout -b $branch
 }
 
 function global:pr {

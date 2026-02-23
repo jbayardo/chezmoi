@@ -74,27 +74,10 @@ if (!$IsWindows) {
   $PathDelimiter = ":"
 }
 
-$ExtraPaths = @(
-  "~/.dev/powershell/scripts",
-  "~/.dev/tools/kusto-cli"
-)
-
-foreach ($Path in $ExtraPaths) {
-  try {
-    $Path = Resolve-Path $Path -ErrorAction Stop
-    $env:PATH += "$PathDelimiter$Path"
-  }
-  catch {
-  }
-}
-
-$Env:LLM_USER_PATH = Resolve-Path "~/.dev/tools/llm";
-
 $Env:XDG_CONFIG_HOME = Resolve-Path "~/.config";
 
 $Env:NAVI_CONFIG = Resolve-Path "~/.dev/tools/navi/config.yaml";
 # $Env:NAVI_PATH = Resolve-Path "~/.dev/tools/navi/cheats";
-$Env:AICHAT_CONFIG_DIR = Resolve-Path "~/.dev/tools/aichat"
 $Env:RIPGREP_CONFIG_PATH = Resolve-Path "~/.ripgreprc"
 
 # Enables image preview in Yazi

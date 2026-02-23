@@ -50,11 +50,8 @@ if ($IsWindows) {
     }
 }
 
-$EspansoTargetPath = "~/.dev/espanso" | Resolve-Path
-if ($IsLinux) {
-    $EspansoConfigPath = "$Env:XDG_CONFIG_HOME/espanso"
-}
-elseif ($IsWindows) {
+$EspansoTargetPath = "~/.config/espanso" | Resolve-Path
+if ($IsWindows) {
     $EspansoConfigPath = "$Env:APPDATA\espanso"
 }
 elseif ($IsMacOS) {
@@ -66,8 +63,9 @@ function Test-ReparsePoint([string]$path) {
     return [bool]($file.Attributes -band [IO.FileAttributes]::ReparsePoint)
 }
 
-# If it's not a symbolic link
-if (-not (Test-ReparsePoint $EspansoConfigPath)) {
+# On Linux, chezmoi manages ~/.config/espanso directly, no symlink needed.
+# On Windows/macOS, symlink from OS-specific path to ~/.config/espanso.
+if ($EspansoConfigPath -and -not (Test-ReparsePoint $EspansoConfigPath)) {
     New-Item -ItemType SymbolicLink -Path $EspansoConfigPath -Target $EspansoTargetPath -Force
 }
 

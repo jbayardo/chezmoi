@@ -87,76 +87,10 @@ function global:root {
 }
 
 function global:gg {
-  $directories = @(Find-Src);
-  $repositories = @()
-
-  foreach ($directory in $directories) {
-    if (-not (Test-Path -PathType Container $directory)) {
-      continue
-    }
-
-    $candidates = fd --unrestricted --max-depth 3 --absolute-path '.git$' $directory | ForEach-Object {
-      return (Join-Path $_.Trim() '..' | Resolve-Path).ToString();
-    }
-
-    $repositories += $candidates
+  $selected = (uv run (Resolve-Path "~/.dev/python/gg.py") @args | Out-String).Trim()
+  if (-not [string]::IsNullOrEmpty($selected)) {
+    Push-Location $selected
   }
-
-  $repositories = @($repositories | Select-Object -Unique)
-
-  if ($repositories.Count -eq 0) {
-    Write-Error "Unable to find any repositories in the search directories."
-    return
-  }
-
-  # Filter repositories first before fetching branch info
-  $fzfOutput = ($repositories | fzf --filter "$args" | Out-String).Trim()
-  if (-not $fzfOutput) {
-    Write-Error "Unable to find repositories matching query: $args in the specified directories."
-    return
-  }
-  $filteredRepos = @($fzfOutput -split "`r?`n" | Where-Object { $_ -ne "" })
-
-  # If only one match, go directly without fetching branch info or using fzf
-  $selected = $null
-  if ($filteredRepos.Count -eq 1) {
-    $selected = $filteredRepos[0]
-  }
-  else {
-    # For display purposes, fetch branch info for filtered repositories
-    $repositoryInfo = $filteredRepos | ForEach-Object -Parallel {
-      $repo = $_
-      Push-Location $repo
-      try {
-        $branch = (git branch --show-current 2>$null | Out-String).Trim()
-        if (-not $branch) {
-          $branch = "detached"
-        }
-        return @{Path = $repo; Display = "$repo [$branch]" }
-      }
-      catch {
-        return @{Path = $repo; Display = "$repo [unknown]" }
-      }
-      finally {
-        Pop-Location
-      }
-    } -ThrottleLimit 16
-
-    $selectedDisplay = ($repositoryInfo.Display | fzf --query "$args" | Out-String).Trim()
-    if (-not $selectedDisplay) {
-      Write-Error "No repository selected."
-      return
-    }
-    # Find the matching path from the display
-    $selected = ($repositoryInfo | Where-Object { $_.Display -eq $selectedDisplay }).Path
-  }
-
-  if (-not $selected) {
-    Write-Error "No repository selected."
-    return
-  }
-  
-  Push-Location $selected
 }
 New-Alias -Force repo gg
 

@@ -12,12 +12,9 @@ komorebi.json
 komorebi.bar.json
 .config/whkdrc
 .lesshst
-.dev/
-.claude/
-claude-mcp-servers.ps1
-komorebi-reload.ps1
-update-oh-my-posh.ps1
-update-television-channels.ps1
+.dev/input/
+komorebi-reload.py
+update-oh-my-posh.py
 {{ end -}}
 
 {{ if eq .chezmoi.os "windows" -}}
@@ -35,5 +32,4 @@ mount_jellyfin.py
 seedbox_download.sh
 update.sh
 setup.sh
-update_television_channels.sh
 {{ end -}}

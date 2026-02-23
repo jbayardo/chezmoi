@@ -1,1 +1,0 @@
-tv update-channels --force | Out-Null
